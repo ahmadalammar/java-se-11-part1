@@ -1,0 +1,403 @@
+############# Describing and using objects #################
+
+1- valid object declaration:
+   Object a = new Object(), s = new String("test");
+   // its okay bcoz string is subtype of object...
+
+2- one benefits of jre it frees developers from the complexity
+   of memory management by providing garbage collector.
+
+3- we can run java app and log garbage collector logs by adding: java.exe Xlog:gc
+
+4- garbage collector options:
+   - serial collector: it will use single thread to perform all garbage collector.
+   - parallel collector: has multiple thread that used to speed up the garbage collection.
+   - garbage-first (G1): its default for jdk 11
+   - Z garbage collector.
+   - concurrent mar sweep: deprecated as of jdk 9.
+
+5- question:
+When does the object with the variable name = "Mary" (identified as Object 1 in comment) become eligible for garbage collection?
+A.  After Line 1
+
+B.  After Line 2
+
+C.  After Line 3
+
+D.  After Line 4
+
+E.  None of the above (correct answer)
+    The object with name "Mary" is returned from the method and assigned to a variable in the calling method,
+    so a reference to the object is maintained even after the method completes.
+
+class TestData {
+    String name;
+
+    TestData(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        return this.name;
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        TestData t0 = createObjects();
+        System.out.println(t0);
+    }
+
+    private static TestData createObjects() {
+        TestData t1 = new TestData("Mary");  // Object 1 = Mary
+        TestData t2 = new TestData("Nancy");
+        TestData t3 = new TestData("Owen");
+        TestData t4 = new TestData("Ralph");
+        t3 = t4 = t1;   // Line 1
+        t1 = t2 = null;  // Line 2
+        t4 = null;  // Line 3
+        return t3;  // Line 4
+    }
+}
+
+6- Defining the structure of a class:
+   - public
+   - protected (only nested class can be protected).
+   - private (only nested class can be private).
+
+7- valid class declarations:
+  static class Test: u can only declare a class static if its a member of another class.
+
+8- invalid class declarations:
+   final abstract class Test.
+
+9- initializer blocks are executed prior to any constructor block of code being executed,
+   but after any call to parent type constructor....
+
+10- cant use 'this' keyword in static initializer....
+
+11- notice the output below, the instance initializer called first before constructor...
+
+class OrderedClass {
+    static int statementOrder;
+
+    int a = clarify("assigning a");
+
+    // initializer 1
+    {
+        clarify("initializer 1");
+    }
+
+    int b = clarify("assigning b");
+
+    // initializer 2
+    {
+        clarify("initializer 2");
+    }
+
+    // Constructor
+    OrderedClass() {
+        clarify("constructor");
+    }
+
+    int c = clarify("assigning c");
+
+    //  initializer 3
+    {
+        clarify("initializer 3");
+    }
+
+    // method called from initializers which should help us understand
+    // the order of execution
+    int clarify(String message) {
+        statementOrder++;
+        System.out.println(statementOrder + " " + message);
+        return statementOrder;
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        // Instantiating the object should set off initialization code.
+        OrderedClass o = new OrderedClass();
+    }
+}
+
+12- static initializers.....
+
+class staticInitExample {
+    static int statementOrder;
+    static int firstVariable = clarifyOrder("assigning firstVariable");
+
+    {
+        System.out.println("am instance initializer");
+    }
+    // Static initializer 1
+    static {
+        clarifyOrder("executing initializer 1");
+    }
+
+    static int secondVariable = clarifyOrder("assigning secondVariable");
+
+    // Static initializer 2
+    static {
+        clarifyOrder("executing initializer 2");
+    }
+
+    static int clarifyOrder(String message) {
+        statementOrder++;
+        System.out.println(statementOrder + " " + message);
+        return statementOrder;
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        // new staticInitExample(); // notice here we are declaring instance variable, and its called last one bcoz static always init first....
+        // System.out.println("statements made so far = " + staticInitExample.statementOrder); // notice here we're calling static variable, that's why the instance initializer not being called....
+    }
+}
+
+13- illegal forward reference:
+    its when u try use variable in initializer that is below the initializer block...
+
+
+class Thing {
+
+    // Constructor
+    Thing() {
+        secondString = "b";
+    }
+
+    // Initializer
+    {
+        firstString = "a";
+        firstString = "a"+thirdString;// okay bcoz thirdString is static variable and this block will only be called after static initializer...
+        // firstString = "a" + secondString; // compiler error...
+        //firstString = "a" + this.secondString; // OKAY, but this.secondString is always null....
+    }
+
+    // Static Initializer
+    static {
+        thirdString = "c";
+        // System.out.println(thirdString); // compiler error...
+        // firstString="1a"; // compiler error, cant access instance variable from static initializer...
+    }
+
+    // Two instance variables
+    String firstString;
+    String secondString;
+
+    // static variable
+    static String thirdString;
+
+    public String toString() {
+        return firstString + secondString + thirdString;
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Thing one = new Thing();
+        System.out.println(one);
+    }
+}
+
+14- notice the output for code below, how the initializer being called for parent and child classes....
+
+class ASuperClass {
+    String name;
+
+    // Constructor for Super Class
+    ASuperClass() {
+        System.out.println("[Parent] constructor executes");
+    }
+
+    static {
+        System.out.println("[Parent] static init");
+    }
+
+    {
+        System.out.println("[Parent] instance init");
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        return "My name is " + this.name;
+    }
+}
+
+class ASubClass extends ASuperClass {
+
+    // Constructor for Sub Class
+    ASubClass() {
+        System.out.println("[Child] no args constructor executes");
+        setName(name);
+    }
+
+    // Constructor for Sub Class
+    ASubClass(String name) {
+        this();
+        System.out.println("[Child] single argument constructor executes");
+        setName(name);
+    }
+
+    static {
+        System.out.println("[Child] static init");
+    }
+
+    {
+        System.out.println("[Child] instance init");
+    }
+
+}
+
+public class Test {
+    public static void main(String[] args) {
+        ASubClass joe = new ASubClass("Joe");
+        System.out.println(joe);
+    }
+}
+
+
+15- Tricky question....
+NOTE: static initializer cant access instance variables .....
+
+
+class test {
+
+    public int test;  // Line 1
+    {
+        test = 1;
+    }
+    public int test() { return test;   }  // Line 2
+    public test() {  test = 2;   }
+    {   test = 3;   }  // Line 3
+    static { test = 4; }   // Line 4
+
+    public String toString() {  return ""+test();   }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        test test = new test();   // Line 5
+        System.out.println(test);
+    }
+
+}
+
+16- Tricky question 2:
+
+// You cannot define a class as static unless it is a nested class. Remove the word static and your result is G.
+final static class GreatStuff {  // Line 1
+    public final static String APP_NAME = "GreatApp";
+    public static int counter = 1;  // Line 2
+
+    public final static int helpfulMethod() {  // Line 3
+        return counter++;  // Line 4
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        System.out.println(GreatStuff.APP_NAME + " " + GreatStuff.helpfulMethod() + " " + GreatStuff.counter);
+    }
+
+}
+
+17- Types of fields on a class:
+    transient fields: these are fields which wont get serialized or persisted.
+    volatile fields: to ensure that all threads see a consistent value of variable .
+
+18- invalid use of 'this' keyword....
+    static void modifyName() {
+       this.name = "abc"; // compiler error, cant access instance variables from static...
+    }
+
+
+    - u cant assign null to this...
+    this = null;  // compiler error.
+    this = myObject; // compiler error.
+
+
+19- final fields should be initiated either inline, constructor or at initializer...
+    - and if u have multiple constructor they MUST all init the final fields....
+    - u cant assign final field in both initializer and constructor, it MUST be one only bcoz
+      once u set the value to final it cant be changed.
+
+class Constants {
+    // Final static class variables are considered constants.
+    // There is one reference to them (static)
+    // they cannot be altered (final)
+    final static String ONE = "final static field ONE = one";
+    final static String TWO = "final static field TWO = two";
+
+    // Compile error if static intitializer removed
+    final static String THREE;
+
+    static {
+        THREE = "final static field THREE = three";
+    }
+
+}
+
+public class Test {
+
+    // You can create final instance variables that are not static.
+
+    final String FOUR;
+
+    // initializer sets final field four
+    {
+        FOUR = "final field FOUR = four";
+    }
+
+    final String FIVE;
+
+    // constructor sets final field five
+    Test() {
+        FIVE = "final field FIVE =  five";
+    }
+
+    public static void main(String[] args) {
+
+        // Access and print the constants.
+        System.out.println(Constants.ONE);
+        System.out.println(Constants.TWO);
+        System.out.println(Constants.THREE);
+
+        System.out.println((new Test()));
+
+    }
+
+    public String toString() {
+        return FOUR + "\n" + FIVE;
+    }
+}
+
+
+2- Tricky question                               /************ TRICKY **************/
+
+class TestConstants {
+    public static boolean debugFlag ;
+    public static final String APP_NAME ;  // Line 1
+    static {
+        if (debugFlag) APP_NAME="FooBarApp";  // Line 2
+        else  APP_NAME="GreatApp";
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        TestConstants.debugFlag=true;  // Line 3
+        System.out.println(TestConstants.APP_NAME);   // Line 4
+    }
+}
+
+ Code compiles and executes fine. The boolean debugFlag is initialized to false.
+ The act of setting the debugFlag on Line 3 actually executes the static initializer,
+ which uses the current value of debugFlag (false) to set the APP_NAME to "GreatApp".
+

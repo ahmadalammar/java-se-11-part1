@@ -1,0 +1,652 @@
+############# Creating and Using methods #################
+
+1- java always passes params by value NOT by reference.
+2- if u use abstract keyword then can only used public or protected modifier.
+3- invalid method declaration:
+  void method(Object... o, String s); // varags must be last param.
+  void method(int a, Object a) ; // cant have both param with same name.
+
+4- pass by value,
+   note that primitive types and String wont be changed,
+
+// run and see the output...
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Set up some test data
+
+        // Primitive data variables
+        int a = 1;
+        int b = 2;
+
+        // String variables
+        String aString = new String("123");
+        String bString = new String("456");
+
+        // Object variables using StringBuilder
+        StringBuilder abc = new StringBuilder("abc");
+        StringBuilder def = new StringBuilder("def");
+
+        System.out.println("-------- Before method call --------");
+
+        // Print out values and hashcodes prior to method call
+        System.out.println("abc.hashCode() = " + abc.hashCode()
+                + ", value = " + abc);
+        System.out.println("def.hashCode() = " + def.hashCode()
+                + ", value = " + def);
+
+        System.out.println("a = " + a);
+        System.out.println("b = " + b);
+        System.out.println("aString.hashCode() = " + aString.hashCode() +
+                ", value = " + aString);
+        System.out.println("bString.hashCode() = " + bString.hashCode() +
+                ", value = " + bString);
+
+        // Execute method on each type of data
+        changeValue(a, b);
+        changeValue(aString, bString);
+        changeValue(abc, def);
+
+        System.out.println("-------- After method call --------");
+
+        // Print out values and hashcodes after the method call
+        System.out.println("abc.hashCode() = " + abc.hashCode() +
+                ", value = " + abc);
+        System.out.println("def.hashCode() = " + def.hashCode() +
+                ", value = " + def);
+        System.out.println("a = " + a);
+        System.out.println("b = " + b);
+        System.out.println("aString.hashCode() = " + aString.hashCode() +
+                ", value = " + aString);
+        System.out.println("bString.hashCode() = " + bString.hashCode() +
+                ", value = " + bString);
+
+    }
+
+    public static void changeValue(Object o1, Object o2) {
+
+        // This code changes the values of the parameters passed to it.
+        switch (o1.getClass().getName()) {
+            case ("java.lang.Integer"):
+                o1 = 10;
+                o2 = 20;
+                break;
+            case ("java.lang.String"):
+                o1 = "aaaa";
+                o2 = "bbbb";
+                break;
+            case ("java.lang.StringBuilder"):
+                o1 = ((StringBuilder) o1).append("xyz");
+                o2 = ((StringBuilder) o2).append("zzz");
+
+                break;
+        }
+    }
+}
+
+5- valid return types..
+   Number method() {
+     return Integer.valueOf(1); // okay bcoz integer is sub-type of Number..
+   }
+
+  long method() {
+    return Long.valueOf(10);  // okay to unbox and autobox..
+  }
+
+6- invalid return types///
+
+    Integer method() {
+     Number n = Integer.valueOf(10);
+     return n; // compiler error, bcoz Number not a sub-type of Integer
+   }
+
+   long method() {
+     return null;
+   }
+
+   int method() {
+     return 10L;
+   }
+
+7- some notes about constructors...
+// just run and see result...
+
+/********
+ * - if u did not create any constructor in class then java create default constructor for us.
+ * - if u created one constructor then java wont create a default constructor for us.
+ * - no args parent constructor always called from sub-class.
+ *
+ * *********/
+class ATest {
+}
+
+// Create a sub class
+class BTest extends ATest {
+    private String name;
+
+    // Constructor has one parameter
+    BTest(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Instantiate the object with the one parameter constructor
+        BTest btest = new BTest("Jeff");
+        System.out.println(btest.getName());
+    }
+}
+
+8- Tricky                       /**************** TRICKY ***************/
+u cant extend a class that has a private no-args constructor...
+
+class OnlyClass {
+
+    // private constructor, the ONLY constructor
+    private OnlyClass() {
+    }
+
+    OnlyClass(String s){
+
+    }
+
+    private int classVariable;
+
+    // instances can only be created within current class
+    // or a nested class
+    private static final OnlyClass instance = new OnlyClass();
+
+    // You can expose the only instance via a static method
+    public static OnlyClass getInstance() {
+        return instance;
+    }
+
+    // Or you can make static methods which call methods on the
+    // protected instance
+    public static void doSomething() {
+        instance.doSomethingRestricted();
+    }
+
+    private void doSomethingRestricted() {
+        this.classVariable++;
+        System.out.println("Only one instance of this class exists" +
+                " or will ever exist");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        OnlyClass.doSomething();
+        // OnlyClass o1 = new OnlyClass(); // compiler error...
+        OnlyClass o2 = new OnlyClass("str"); // okay
+
+    }
+}
+
+/*********
+ * the below code is compiler error, evetho u have other constructor in parent but the no-args is private then
+ * u cant extend it..
+ * ****/
+class OnlyClassExtend extends OnlyClass {
+}
+
+
+9- if u want to force implementation of toString(), equal(), ..etc in subclasses then u need to
+   declare it as abstract.
+
+
+// Create an abstract class with abstract methods
+abstract class WillHaveManySubTypes {
+
+    public abstract void doXYourWay();
+
+    public abstract void doYYourWay();
+
+    public abstract String toString();
+
+    // Here we create a final method in an abstract class
+    final void doZOnlyOneWay() {
+        System.out.println("Z can only be done this way");
+    }
+}
+
+public class Test extends WillHaveManySubTypes {
+    private boolean flag = false;
+
+    public static void main(String[] args) {
+
+        // We instantiate an object and test all the methods
+        Test e = new Test();
+        e.doXYourWay();
+        e.doYYourWay();
+        e.doZOnlyOneWay();
+        System.out.println(e);
+    }
+
+    //Override and implement the abstract class's abstract methods
+    public void doXYourWay() {
+        System.out.println("Implemented X my way");
+    }
+
+    public void doYYourWay() {
+        System.out.println("Implemented Y my way");
+    }
+
+//    public void doZOnlyOneWay() {
+//        System.out.println("Implement Z my way");
+//    }
+
+    public String toString() {
+//        return super.toString(); /******************* TRICKY *****************/
+        // super.toString() will not call java.lang.toString in this case, in fact it will call the parent method which is abstract...
+        return "Not implemented yet";
+    }
+}
+
+10- overloading rules            /****************** memorize ******************/
+
+
+
+class TestConstants {
+
+    /*********** error 1, Ambiguous method call by caller method...*****/
+    public void test(int... a) {
+        System.out.println("int");
+    }
+
+    public void test(Integer... a) {
+        System.out.println("Integer");
+    }
+
+    /****** error 2 , same method signature and same method name , one static and one instance method...*/
+//    public void method1(int a){
+//
+//    }
+//
+//    public static void method1(int a){
+//
+//    }
+
+
+}
+
+class WhichOne {
+
+    // byte
+    public String thisOne(byte i) {
+        return "byte matched";
+    }
+
+    public String thisOne(byte... i) {
+        return "byte... matched";
+    }
+
+    public String thisOne(Byte i) {
+        return "Byte matched";
+    }
+
+    public String thisOne(Byte... i) {
+        return "Byte... matched";
+    }
+
+    // short
+    public String thisOne(short i) {
+        return "short matched";
+    }
+
+    public String thisOne(short... i) {
+        return "short... matched";
+    }
+
+    public String thisOne(Short i) {
+        return "Short matched";
+    }
+
+    public String thisOne(Short... i) {
+        return "Short... matched";
+    }
+
+    // int
+    public String thisOne(int i) {
+        return "int matched";
+    }
+
+    public String thisOne(int... i) {
+        return "int... matched";
+    }
+
+    public String thisOne(Integer i) {
+        return "Integer matched";
+    }
+
+    public String thisOne(Integer... i) {
+        return "Integer... matched";
+    }
+
+    // char
+    public String thisOne(char i) {
+        return "char matched";
+    }
+
+    public String thisOne(char... i) {
+        return "char... matched";
+    }
+
+    public String thisOne(Character i) {
+        return "Character matched";
+    }
+
+    public String thisOne(Character... i) {
+        return "Character... matched";
+    }
+
+    // long
+    public String thisOne(long i) {
+        return "long matched";
+    }
+
+    public String thisOne(long... i) {
+        return "long... matched";
+    }
+
+    public String thisOne(Long i) {
+        return "Long matched";
+    }
+
+    public String thisOne(Long... i) {
+        return "Long... matched";
+    }
+
+    // float
+    public String thisOne(float i) {
+        return "float matched";
+    }
+
+    public String thisOne(float... i) {
+        return "float... matched";
+    }
+
+    public String thisOne(Float i) {
+        return "Float matched";
+    }
+
+    public String thisOne(Float... i) {
+        return "Float... matched";
+    }
+
+
+    /////////////////////
+    public String anotherOne(Double e) {
+        return "Double... matched";
+    }
+//    public String anotherOne(Float e) {
+//        return "Float... matched";
+//    }
+
+    ///////////////////////
+    public String testArity(int i, int... b) {
+        return "(int i, int... b)... matched";
+    }
+
+    public String testArity(int... b) {
+        return "(int... b)... matched";
+    }
+
+
+}
+
+
+/********* Note before you start ********
+ * for overloading the complier will choose which method to call using the following rules:
+ * 1- choose method with the exact match : int-> int, long->long ... etc
+ * 2- allow widening using th following:
+ *    byte -> short -> int
+ *    char -> int -> long -> float -> double
+ * 3- allow boxing and unboxing :
+ *    int -> Integer
+ *    Integer -> int
+ * 4- if none match from previous then it will use arity ....
+ *    int... arr (this will be the last option...)
+ *
+ * *********************************/
+
+public class Test {
+
+    public static void main(String[] args) {
+        TestConstants t = new TestConstants();
+        int i = 1;
+        //t.test(i); // Ambiguous method call. Both
+        //t.test((int)i);  // Ambiguous method call. Both
+
+
+        /////////////////////////////////////////////////////
+        WhichOne whichOne = new WhichOne();
+        byte b = 2;
+        System.out.println(whichOne.thisOne((b))); // byte matched
+        // lets comment out byte matched we will see that short method matched as output...
+        // lets comments out short match we will see that int match as output...
+        // lets comments out int match we will see that long match as output...
+        // lets comments out long match we will see that float match as output...
+        // lets comments out float match we will see that Byte match as output...
+
+        // Lets comment out Byte match then we will see that it cant widen to other wrapper class type,
+        // like for example : byte -> Byte  - Okay
+        // but if we comment out 'Byte matched' then we cant expect the byte will be widened to Short
+        // byte -> Short // no it wont ...
+        // it will try to match using the last step which is arity... , but it will see we have two
+        // byte... and Byte... then it will show error at caller method ' Ambiguous method call'....
+
+        // let try to comment out byte... then we will see it will complie success but it will thro a runtime error 'reference to thisOne is ambiguous'
+        // bcoz we have two possible matches (java.lang.Byte...) and thisOne(short...) ....
+
+        // but let say u add back byte... again and comment out Byte... then it will run successfully and will show byte... matched
+
+
+        Character c = 'a';
+        System.out.println("Method (" + whichOne.thisOne(c) +
+                ") was executed for " + c);
+
+        char c2 = 'a';
+        System.out.println("Method (" + whichOne.thisOne(c2) +
+                ") was executed for " + c2);
+
+        ////////////////////
+
+        float f = 12.9f;
+        // System.out.println(whichOne.anotherOne(f));
+        // let comment out anotherOne(Float);
+        // then it will show an error bcoz primitive float cant be converted to Double wrapper
+
+
+        //////////////////
+        //whichOne.testArity(12); // Ambiguous method call.
+    }
+}
+
+11- Tricky question about overloading....:
+
+class Calculator {
+
+    public static long add(int a, Double f) {
+        System.out.println("int + Double");
+        long result = (long) (a + f);
+        return result;
+    }
+
+    public static long add(int a, Long b) {
+        System.out.println("int + Long");
+        return a + b;
+    }
+
+//    public static long add(int a, long b) {
+//        System.out.println("int + long");
+//        return a + b;
+//    }
+
+    public static long add(int... a) {
+        System.out.println("Var args int");
+
+        int total = 0;
+        for (int val : a) {
+            total += val;
+        }
+        return total;
+    }
+
+//    public static long add(int a, int... b) { // u can change (int... b) to (long... b) then it will works fine and wont show a compiler error
+//        System.out.println("Var args int");
+//
+//        int total = 0;
+//        for (int val : b) {
+//            total += val;
+//        }
+//        return total;
+//    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Testing Calculator with multiple primitive data types
+        var result = Calculator.add(1, 2); // this will call: add(int... a) , note if add(int a, long b) exists then it will call it
+        System.out.println("result = " + result);
+
+        result = Calculator.add(1, 2, 3); // this will call: add(int... a)
+        System.out.println("result = " + result);
+
+        // if u comment out add(int a, int... b) u will get a compiler error for Calculator.add(1, 2); and Calculator.add(1, 2, 3); it will be ambiguous call
+
+        result = Calculator.add(1, 10l); // this will call: add(int a, Long b) ,  note if add(int a, long b) exists then it will call it
+        System.out.println("result = " + result);
+
+        result = Calculator.add(1, 12.3); // this will call: add(int a, Double f) , if u make 12.3 12.3f (Calculator.add(1, 12.3f)) then it will be a compiler error...
+        System.out.println("result = " + result);
+    }
+}
+
+11- Tricky question about overloading
+just run and see result...
+
+
+public class Test {
+    public static void main(String[] args) {
+        Test t = new Test();
+        char c = 'a';
+        int i = 10;
+        t.printMethod(i, c);
+        t.printMethod(c, i);
+    }
+
+    public void printMethod(int a, Long b) {   // Method 1
+        System.out.println("Method (int, Long) called");
+    }
+
+    void printMethod(short a, Character b) {  // Method 2
+        System.out.println("Method (short, Character) called");
+    }
+
+    void printMethod(int... a) {   // Method 3
+        System.out.println("Method (int...) called");
+    }
+}
+
+12- cant add static to constructor.
+13- static initializer only called when we call static field or static methods...
+
+class StaticStuff {
+    static String appName = "A Good App";
+
+    // static initializer
+    static {
+        System.out.println("Initializing StaticStuff class");
+        StaticStuff.counter++;
+    }
+
+    static void printAppName() {
+        System.out.println("Application Name:  " + appName +
+                " : counter  = " + counter);
+    }
+
+    static int counter;
+}
+
+public class Test {
+    public static void main(String[] args) {
+        // We access static member of the StaticStuff class
+        // static initializer only called when we call StaticStuff.appName or StaticStuff.printAppName()
+        //StaticStuff.printAppName();
+        System.out.println("Application Name: " + StaticStuff.appName);
+
+        StaticStuff s = null;
+        System.out.println("Application Name: " + s.appName); // even tho s is null, static initializer will still be called...
+
+    }
+}
+
+14-                                         /************** TRICKY ***************/
+
+class StaticStuff {
+    static /*final*/ String appName = "A Good App"; // if u add final to static then the static initializer will not be called
+    // bcoz final is a constant and its evaluated during compile time...
+
+    // static initializer
+    static {
+        System.out.println("Initializing StaticStuff class");
+        StaticStuff.counter++;
+    }
+
+    static void printAppName() {
+        System.out.println("Application Name:  " + appName +
+                " : counter  = " + counter);
+    }
+
+    static int counter;
+}
+
+public class Test {
+    public static void main(String[] args) {
+        System.out.println("Application Name: " + StaticStuff.appName);
+        System.out.println("Counter : "+StaticStuff.counter); // only when we call StaticStuff.counter the static initializer being called
+        // bcoz counter is not final and its just a static....
+    }
+}
+
+15- static initializer executed only once....
+
+16- u cant define a static class as a standalone class, it has to be nested class...
+
+17- TRICKY QUESTION                  /************** TRICKY *************/
+
+about static initializer...
+notice the output...
+
+class AppTest {
+    static String AppName = "Great";
+    final static String goodName = "Good";
+    final static String greatName = AppName;  // Line 1
+
+    static {
+        AppName += " Name";   // Line 2
+    }
+
+    final static String badName = AppName;   // Line 3
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        AppTest t = null;
+        System.out.println(t.goodName);
+        System.out.println(t.greatName);
+        System.out.println(t.badName);
+    }
+}
+

@@ -1,0 +1,371 @@
+############# Applying encapsulation #################
+
+1- Access modifier from less restrictive to more restrictive ..
+  public , protected , default , private.            /*********** memorize ***********/
+
+  note:
+  protected is available for both classes in SAME package and subclasses.
+  default is available for classes in same package.
+
+  note:
+  nested class can access private members in outer class.
+
+
+example:
+refer to pkga.SuperClass abd pkgb.ParentClass
+
+2- u cant override parent attribute, creating an attribute on child class with
+   the same name and type as the parent. (known as attribute hiding).
+   and the child attribute can be either more restrictive or less restrictive than the parent.
+
+// Create a base class Animal which has one attribute with each
+// type of access modifier
+class Animal {
+
+    // Each attribute has a different access modifier
+    public String name = "Unknown";
+    protected String breed = "Unknown";
+    String owner = "Unknown";
+    private String type = "Unknown";
+
+    public String toString() {
+        return owner + "'s " + type + " " + name + " is a " + breed;
+    }
+}
+
+// Dog declares exact same attributes as its parent, Animal, but modifies
+// the access modifier of each attribute
+class Dog extends Animal {
+
+    // type was private on Animal, we declare it public here
+    // Less restrictive hiding
+    public String type = "Dog";
+
+    // owner was package-private on Animal, we declare it protected here
+    // Less restrictive hiding
+    protected String owner;
+
+    // breed was protected on Animal, we declare it package-private by
+    // default
+    // package-private is more restrictive hiding than protected
+    String breed;
+
+    // name was public on Animal, we declare it private here
+    // More restrictive hiding
+    private String name;
+
+    // Constructor to make creating a Dog easy
+    Dog(String owner, String name, String breed) {
+        this.owner = owner;
+        this.name = name;
+        this.breed = breed;
+    }
+
+    public String toString() {
+        return super.toString();
+    }
+
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        Animal a = new Animal();
+        System.out.println("Created a generic animal with defaults:");
+        System.out.println(a.toString()); // Unknown's Unknown Unknown is a Unknown
+
+        System.out.println("Created a specific dog");
+        Dog pug = new Dog("Fran", "Brandy", "Pug");
+        System.out.println(pug.toString()); // Unknown's Unknown Unknown is a Unknown
+
+        System.out.println("Pug's type is " + pug.type);
+        System.out.println("Pug's breed is " + pug.breed);
+        System.out.println("Pug's owner is " + pug.owner);
+
+        // after pointing subclass to parent class then the attributes will be from parent class and not from
+        // child class anymore...                                        /*************** TRICKY **************/
+        a = pug;
+        System.out.println("Pug's breed is " + a.breed);
+        System.out.println("Pug's owner is " + a.owner);
+        System.out.println("Pug's name is " + a.name);
+//        System.out.println("Pug's type is " + a.type);
+    }
+}
+
+
+3- NOTE                                   /************* TRICKY ***********/
+
+u cant use super keyword in static method.
+
+protected class SuperClass {  // Line 1 , this will show a compiler error bcoz cant use protected in  top-level class, should be only at nested classes....
+    static void testMe() { System.out.println("SuperClass"); }
+}
+
+public class Test extends SuperClass {
+    protected static void testMe() { System.out.println("Test"); }  //Line 2
+
+    public static void main(String[] args) {
+        testMe();  // Line 3
+        super.testMe();  // Line 4 , this is a compiler error bcoz cant use super in static method....
+    }
+}
+
+4- bean
+  applying encapsulation to fields
+  making them private
+  provider getter and setter method, example getFirstName()
+  provide setter method to set the value, example:  public void setFirstName(String name)
+  for boolean it should start with 'is' instead of 'get' for getter, example : isFirst()
+
+
+5- bean rules:
+  - combines data and behavior into a single class.
+  - hide attributes and make them private.
+  - provide a mechanism that sets attributes.
+    - could be thro public constructor, public setter method or some other mechansim.
+    - if attribute is a variable reference, we should remember that the underlying object
+      referenced is a way to ensure the data does not change.
+  - provide mechanism for getting data from attribute.
+
+
+public class FirstBean {
+
+    private String name;
+    private int age;
+    private boolean first;
+
+    private int myOwnVariable;
+
+    public int getFieldAlias() {
+        return myOwnVariable;
+    }
+
+    public void setFieldAlias(int fieldAlias) {
+        this.myOwnVariable = fieldAlias;
+    }
+
+    public boolean isFirst() {
+        return first;
+    }
+
+    public void setFirst(boolean first) {
+        this.first = first;
+    }
+
+    public FirstBean(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public static void main(String[] args) {
+    }
+}
+
+6- bean passing by reference...
+// just run and notice the output..
+
+// Person 'Bean'
+class Person {
+    // We declare some private attributes
+    private String name;
+    private StringBuilder address;
+    private int age;
+
+    // We have a constructor for easy creation of Person and
+    // population of its attributes
+    public Person(String name, StringBuilder address, int age) {
+        this.name = name;
+        //this.address = address;
+        this.address = new StringBuilder(address);
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public StringBuilder getAddress() {
+        return address;
+    }
+
+    public void setAddress(StringBuilder address) {
+        this.address = address;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    // Customize toString method
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", address=" + address +
+                ", age=" + age +
+                '}';
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Create some local variables
+        StringBuilder address =
+                new StringBuilder("2234 Maple Ave, Ralphtown, PA, 19000");
+        int age = 45;
+        String name = "Ralph";
+
+        // Create instance of person with local variable references
+        Person p = new Person(name, address, age);
+
+        // Change the local variable's data
+        address.append("-0005");
+        name = "Ralph's Wife";
+        age = 40;
+
+        // Create another instance of person with local variable references
+        Person p2 = new Person(name, address, age);
+        System.out.println(p); // notice that StringBuilder address has been also updated bcoz it was copy by reference, to overcome this
+        // in Person constructor we need to assign: this.address = new StringBuilder(address);
+        System.out.println(p2);
+    }
+}
+
+
+6- TRICKY                                /************ TRICKY ***********/
+Which statement can be inserted into the code above at //** Insert code here **/ to print "Hello World".
+
+--------------  SuperClass.java source code ------------------
+
+package pkgb;
+
+class SuperClass {
+    public void printPublicData(String data) {
+        System.out.println(data);
+    }
+    void printPackageData(String data) {
+        System.out.println(data);
+    }
+    protected void printProtectedData(String data) {
+        System.out.println(data);
+    }
+    private void printPrivateData(String data) {
+        System.out.println(data);
+    }
+}
+-------------- TestClass.java source code ------------------
+package pkga;
+
+import pkgb.SuperClass;
+
+public class TestClass extends SuperClass {
+    public static void main(String[] args) {
+
+       //** Insert code here **/
+    }
+}
+--------------------------
+A. new TestClass().printPublicData("Hello World");
+
+B. new TestClass().printPackageData("Hello World");
+
+C. new TestClass().printProtectedData("Hello World");
+
+D. new TestClass().printPrivateData("Hello World");
+
+E. Both A and C.
+
+F. Both B and D.
+
+G. None of the Above (correct answer)
+  SuperClass has no modifier which means it is package-private access. This means that TestClass cannot extend it, so none of SuperClass's methods can be accessed from TestClass.
+
+
+
+7- TRICKY                                /************ TRICKY ***********/
+
+--------------  Test.java source code ------------------
+
+public class Test {
+    private int counter;
+    private boolean running;
+    private String name;
+    private int weight;
+    private int somethingForNothing;
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getDressSize() {
+        return weight / 10;
+    }
+
+    public boolean getSpecial() {
+        return true;
+    }
+
+    public void getSomethingForNothing() {
+        return;
+    }
+}
+--------------------------
+Which of the following would NOT be a property in a bean inspection tool?  Pick all that apply
+
+A.  counter
+
+B.  running
+
+C.  name
+
+D.  weight
+
+E.  dressSize
+
+F.  special
+
+G.  somethingForNothing
+
+H.  both dressSize and special
+
+I.  both weight and somethingForNothing (correct answer) :
+    There are no accessor methods for weight or somethingForNothing. Although there is a method named getSomethingForNothing,
+    it returns void and is therefore not an accessor method. A bean property is something returned from an accessor method and is not necessarily
+    a variable defined by the class. An accessor method is either prefixed with 'get' for any return type or 'is' for a boolean. Note that 'get' also works with a boolean.
+    An accessor method cannot have a return type of void. An accessor is not required to return a defined class or instance variable.
+
+J.  They ALL are bean properties.
+
+

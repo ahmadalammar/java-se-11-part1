@@ -1,0 +1,1108 @@
+############# Working with arrays #################
+
+1- arrays starts from zero, and last index is length - 1.
+
+2- valid array declaration:
+
+    public static void main(String[] args) {
+        int[] intArray;
+        short shortArray[];
+
+        int a, b[], c;
+        int[] d, e, f[];
+
+        String[] stringArray[]; // two dimension array.
+
+        int[] arr = null; // u can set array to null! but its value cant be set to null coz primitive can take null value.
+
+        int a2[] = new int[]{1, 2, 3, 4}; // its valid as long as u didnt set the array size , new int[3]{1, 2, 3, 4}; (this will show compiler error)
+
+        int[][] a3 = new int[2][]; // must specify at least the row size
+
+    }
+
+3- invalid array declaration:
+
+    public static void main(String[] args) {
+        int[2] intArray;
+        int intArray[2];
+        int a, float b[];
+
+        String[] arr2 = new String()[3];
+
+        String[3] arr4 = new String[];
+
+        int a2[] =  int[]{1,2,3,4,5}; // missing new keyword
+
+        int a3[] = new int[5]{1,2,3,4,5}; // cant set array size in array initializer...
+
+        String[] arr5 ;
+        arr5={"one","two",null,"three"};
+
+        short[] myShortArray , myShortArray2 = myShortArray3 = {1,2,3,4,5}; // can't use array initializer in compound statement.
+
+        int[][] arrMatrix = new int[][2]; // must set the row size at least...
+
+        int c[] = new int[5][]; // cant init two dimension array and assign it to one dimension array.
+    }
+
+4- to create an array we use new .
+   int[] arr = new int[10]; // must set the size here...
+
+5- u could use string initializer to assign values to array
+   String[] arr = {"one","two",null,"three"};
+   // u can only use array initializer in same statement, cant break it into two lines...
+   String[] arr;
+   arr = {"one","two",null,"three"};
+
+
+6- usually we use java.util.Arrays class to manipulate arrays.
+
+7- elements in arrays initialized to 0 for primitive , but if its wrapper then its initialized to null:
+
+        // elements initialized to null
+        Integer[] integerArray = new Integer[5];
+
+        // elements initialized to 0
+        int[] intArray = new int[5];
+
+8- important to run the following code:
+
+
+    public static void main(String[] args) {
+        // Create two arrays, one of Integer, one of int
+
+        // elements initialized to null
+        Integer[] integerArray = new Integer[5];
+
+        // elements initialized to 0
+        int[] intArray = new int[5];
+
+        // Arrays.toString() prints elements as comma delimited String
+        System.out.println("---------- Default Values -----------");
+        System.out.println("intArray = "
+                + Arrays.toString(intArray));
+        System.out.println("integerArray ="
+                + Arrays.toString(integerArray));
+
+        // loop condition uses length attribute of one of the arrays.
+        for (int i = 0; i < intArray.length; i++) {
+
+            // Set data on arrays, autoboxing occurs for integerArray
+            integerArray[i] = intArray[i] = (i + 1);
+        }
+        System.out.println("\n--------- Values after the Loop ----------");
+        System.out.println("intArray = "
+                + Arrays.toString(intArray));
+        System.out.println("integerArray ="
+                + Arrays.toString(integerArray));
+
+        // Access a single element in array
+        intArray[2] = 10;
+        integerArray[0] = 99;
+
+        System.out.println("\n---------- Final Values -----------");
+
+        // Arrays.toString() prints elements as comma delimited String
+        System.out.println("intArray = "
+                + Arrays.toString(intArray));
+        System.out.println("integerArray ="
+                + Arrays.toString(integerArray));
+
+        // Create new int[] variable reference and assign it intArray
+        int[] intArray2 = intArray;
+
+        // Create new Integer[] variable reference and assign it intArray
+        Integer[] integerArray2 = integerArray;
+
+        System.out.println("\n---------- Final Values -----------");
+
+        // Arrays.toString() prints elements as comma delimited String
+        System.out.println("intArray = "
+                + Arrays.toString(intArray));
+        System.out.println("integerArray ="
+                + Arrays.toString(integerArray));
+
+        System.out.println("\n---------- Print Arrays -----------");
+
+        // Printing the array references confirm that these variables
+        // reference the same set of elements
+        System.out.println("intArray = " + intArray);
+        System.out.println("intArray2 = " + intArray2);
+        System.out.println("integerArray = " + integerArray);
+        System.out.println("integerArray2 = " + integerArray2);
+
+        // Make a change to data on first array references
+        integerArray[0] = 55;
+        intArray[0] = 66;
+
+        // Make a change to data on second array references
+        integerArray2[1] = 77;
+        intArray2[1] = 88;
+
+        System.out.println("\n-------- Print Array Values ---------");
+        /********
+         * its important to note that any changes on integerArray2 and intArray2 will be reflected on
+         * the original array and viseversa, bcoz when u do like this: int[] intArray2 = intArray; , Integer[] integerArray2 = integerArray;
+         *  both of them will point to same reference in memory .....
+         *
+         *  this only for arrays, for normal strings and normal primitive type it wont be reflected on original value.
+         * **********/
+
+        // You can see both references show the data changes
+        System.out.println("integerArray = " +
+                Arrays.toString(integerArray));
+        System.out.println("integerArray2 = " +
+                Arrays.toString(integerArray2));
+        System.out.println("intArray = " + Arrays.toString(intArray));
+        System.out.println("intArray2 = " + Arrays.toString(intArray2));
+
+    }
+
+---------------------------------------------------------------------------------
+############## Manipulating Arrays ###############
+
+ /**************************** memorize *********************/
+
+1- Arrays comparison methods:
+   compare (java 9)
+   compareUnsigned (java 9)
+   deepEquals
+   equal
+
+2- Arrays search methods:
+   binarySearch
+   mismatch (java 9)
+
+3- Arrays data manipulation methods:
+   deepHashCode
+   deepToString
+   sort
+   fill
+
+4- Arrays Data transformation:
+   asList
+   copyOf
+   copyOfRange
+   stream
+
+5- List comparison methods:
+   equals
+   isEmpty
+
+6- List search methods:
+   contains
+   containsAll
+   indexOf
+   lastIndexOf
+
+7- List data manipulation methods:
+   add
+   addAll
+   get
+   set
+   sort
+   remove
+   removeAll
+   replaceAll
+   clear
+
+8- List Data transformation:
+   copyOf
+   of
+   iterator
+   subList
+   toArray
+
+9- comparing two arrays using equal method in object...
+
+    public static void main(String[] args) {
+        // Set up some array data for comparison.
+        String[] firstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] copyOfFirstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] firstStringUnsorted = {"jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "abc", "def", "ghi"};
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        String firstStringReference[] = firstString;
+
+        // Create pass-thru Lists from the arrays to test List equality
+        List firstList = Arrays.asList(firstString);
+        List secondList = Arrays.asList(copyOfFirstString);
+
+        // First, compare arrays using object.equals
+        System.out.println("------------- Object.equals ------------");
+        System.out.println(" (firstString.equals(copyOfFirstString)) = "
+                + firstString.equals(copyOfFirstString)); // false bcoz copyOfFirstString has different address
+        System.out.println(" (firstString.equals(firstStringReference)) = "
+                + firstString.equals(firstStringReference)); // true bcoz they are referencing same address
+
+    }
+
+2- comparing arrays using Arrays.equals....
+
+    public static void main(String[] args) {
+        // Set up some array data for comparison.
+        String[] firstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] copyOfFirstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] firstStringUnsorted = {"jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "abc", "def", "ghi"};
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        String firstStringReference[] = firstString;
+
+        // Compare arrays using Arrays.equals
+        System.out.println("\n------------- Arrays.equals ------------");
+        System.out.println(" (Arrays.equals(firstString,copyOfFirstString)) = "
+                + Arrays.equals(firstString, copyOfFirstString)); // true
+        System.out.println(" (Arrays.equals(firstString,firstStringReference)) = "
+                + Arrays.equals(firstString, firstStringReference)); // true
+        System.out.println(" (Arrays.equals(firstString,firstStringUnsorted)) = "
+                + Arrays.equals(firstString, firstStringUnsorted)); // false bcoz firstStringUnsorted not in same order as firstString...
+    }
+
+3- lets use compareTo method in Arrays, compareTo follows these rules:
+   - if Arrays.equals is true , return 0.
+     a = {e1, e2};
+     b = {e1, e2};
+     Arrays.compare(a, b) = 0
+                               /*************** memorize **************/
+
+   - if first array passed to parameter is null, return -1. else if 2nd array is null return 1.
+     a = null;
+     b = {e1, e2};
+     Arrays.compare(a, b) = -1
+
+     a = {e1, e2};
+     b = null;
+     Arrays.compare(a, b) = +1
+
+   - if the length of the first array is 0, return (0 - length of the second array).
+      a = {};
+      b = {e1, e2};
+      Arrays.compare(a, b) = a.length - b.length
+
+   - if the length of the second array is 0, return (length of the first array - 0).
+      a = {e1 , e2};
+      b = {};
+      Arrays.compare(a, b) = a.length - b.length
+
+   - if one array represents the entire prefix of another, the difference in lengths of
+     the arrays is returned.
+     a = {e1, e2};
+     b = {e1, e2, e3};
+     Arrays.compare(a, b) = a.length - b.length
+
+   - the number will be negative if u r comparing the smaller array to larger array..
+   - if no prefix is identified , then the first element of each array is compared.
+     a = {e1, e2};
+     b = {e3, e4};
+     Arrays.compare(a, b) = a[0].compareTo(b[0]);
+
+     a = {e1, e2, e3};
+     b = {e3, e4, e4};
+     Arrays.compare(a, b) = a[2].compareTo(b[2]);
+
+
+example:
+    public static void main(String[] args) {
+        // Set up some array data for comparison.
+        String[] firstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] copyOfFirstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] firstStringUnsorted = {"jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "abc", "def", "ghi"};
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        String firstStringReference[] = firstString;
+
+
+        // Compare arrays using Arrays.compare
+        System.out.println("\n------------- Arrays.compare ------------");
+        System.out.println(" (Arrays.compare(firstString,copyOfFirstString)) = "
+                + Arrays.compare(firstString, copyOfFirstString));
+        System.out.println(" (Arrays.compare(firstString,firstStringReference)) = " +
+                "" + Arrays.compare(firstString, firstStringReference));
+        System.out.println(" (Arrays.compare(firstString,firstStringUnsorted)) = "
+                + Arrays.compare(firstString, firstStringUnsorted));
+        System.out.println(" (Arrays.compare(firstStringUnsorted,firstString)) = "
+                + Arrays.compare(firstStringUnsorted, firstString));
+        System.out.println(" (Arrays.compare(firstString,partialFirstString)) = "
+                + Arrays.compare(firstString, partialFirstString));
+        System.out.println(" (Arrays.compare(partialFirstString,firstString)) = "
+                + Arrays.compare(partialFirstString, firstString));
+    }
+
+4- Array.compare with range:
+
+    public static void main(String[] args) {
+        // Set up some array data for comparison.
+        String[] firstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] copyOfFirstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] firstStringUnsorted = {"jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "abc", "def", "ghi"};
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        String firstStringReference[] = firstString;
+
+
+        // Comparing subsets of elements in arrays
+        System.out.println("\n----  Arrays.compare for Element Ranges ----");
+
+        // Set up arrays - note that both arrays contain "abc", "def", "ghi"
+        String[] stringArray = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+
+        String[] stringUnsortedArray = {"jkl", "mno", "pqr", "stu",
+                "vwx", "yz", "abc", "def", "ghi"};
+
+        // We are going to compare the 1st 3 elements of the ordered array,
+        // with the last 3 elements of the unsorted array:
+        System.out.println(" (Arrays.compare(stringArray, 0, 3, stringUnsortedArray, 6, 9)) = "
+                + Arrays.compare(stringArray, 0, 3, stringUnsortedArray, 6, 9));
+                // again i notice when we pass an array, 1st param is always the start index (0), and 2nd param is the length/count (3).
+
+
+        // Interestingly, you do not have to specify the same number of elements.
+        System.out.println(" (Arrays.compare(stringArray, 0, 5, stringUnsortedArray, 6, 9)) = "
+                + Arrays.compare(stringArray, 0, 5, stringUnsortedArray, 6, 9));
+    }
+
+5- list.equal:
+
+    public static void main(String[] args) {
+        // Set up some array data for comparison.
+        String[] firstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+        String[] copyOfFirstString = {"abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"};
+
+        // Create pass-thru Lists from the arrays to test List equality
+        List firstList = Arrays.asList(firstString);
+        List secondList = Arrays.asList(copyOfFirstString);
+        System.out.println("\n------------- List.equals ------------");
+        System.out.println(" (firstList.equals(secondList)) = "
+                + firstList.equals(secondList)); // true, list.equal compare elements inside and NOT only reference...
+    }
+
+
+---------------------------------------------------------------------------------
+############## Array Search ###############
+
+1- binarySearch:
+   search for matching element and return its index, if no match then it returns -1.
+   the array MUST be sorted before using binarySearch.
+   if there is a duplicate value in the array then there is no guarantee which index of the
+   duplicate elements will be returned.
+
+    public static void main(String[] args) {
+        // Set up some array data we want to compare.
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+        String[] firstStringUnsortedDuplicates = {
+                "jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "jkl", "abc", "def", "ghi"
+        };
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        // Create Lists from the arrays to test List search methods
+        List firstList = List.of(firstString);
+        List secondList = Arrays.asList(firstStringUnsortedDuplicates);
+
+        System.out.println("---------- Arrays binarySearch  ----------");
+        // binary search on array, look for "jkl" which is in array
+        String searchString = "jkl";
+        System.out.println("Arrays.binarySearch(firstString,\"jkl\") = "
+                + Arrays.binarySearch(firstString, "jkl"));
+
+        // binary search, look for "aaa",  which is not in array
+        System.out.println("Arrays.binarySearch(firstString,\"aaa\") = "
+                + Arrays.binarySearch(firstString, "aaa"));
+
+        //  binary search, look for "jkl" of which there are two elements
+        System.out.println("Arrays.binarySearch(firstStringUnsortedDuplicates,\"jkl\") = "
+                + Arrays.binarySearch(firstStringUnsortedDuplicates, "jkl"));
+
+        //  binary search on unsorted array, for "abc" which is in array
+        System.out.println("Arrays.binarySearch(firstStringUnsortedDuplicates,\"abc\") = "
+                + Arrays.binarySearch(firstStringUnsortedDuplicates, "abc"));
+
+    }
+
+
+2- Arrays.mismatch return index where two array stop matching...
+
+    public static void main(String[] args) {
+        // Set up some array data we want to compare.
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+        String[] firstStringUnsortedDuplicates = {
+                "jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "jkl", "abc", "def", "ghi"
+        };
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        // Create Lists from the arrays to test List search methods
+        List firstList = List.of(firstString);
+        List secondList = Arrays.asList(firstStringUnsortedDuplicates);
+        System.out.println("\n---------- Arrays mismatch  ----------");
+        // mismatch returns the non-matching index where the prefix ends
+        System.out.println("Arrays.mismatch(firstString,partialFirstString) = "
+                + Arrays.mismatch(firstString, partialFirstString));
+
+        // Try another example...
+        System.out.println("Arrays.mismatch(firstStringUnsortedDuplicates," +
+                " new String[]{\"jkl\",\"mno\"}) = "
+                + Arrays.mismatch(firstStringUnsortedDuplicates, new String[]{"jkl", "mno"}));
+    }
+
+
+3- List indexOf and lastIndexOf:
+
+    public static void main(String[] args) {
+        // Set up some array data we want to compare.
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+        String[] firstStringUnsortedDuplicates = {
+                "jkl", "mno", "pqr", "stu", "vwx",
+                "yz", "jkl", "abc", "def", "ghi"
+        };
+        String[] partialFirstString = {"abc", "def", "ghi", "jkl", "mno"};
+
+        // Create Lists from the arrays to test List search methods
+        List firstList = List.of(firstString);
+        List secondList = Arrays.asList(firstStringUnsortedDuplicates);
+
+        System.out.println("\n-------------- List methods  -------------------");
+        // Does array contain "def"?
+        System.out.println("firstList.contains(\"def\") =  "
+                + firstList.contains("def"));
+
+        // Does array contain elements in partialString?
+        System.out.println("firstList.containsAll(Arrays.asList(partialFirstString)) =  "
+                + firstList.containsAll(Arrays.asList(partialFirstString)));
+
+        // create a second list not in same order
+        String[] anotherUnsortedSet = {"jkl", "def", "abc", "ghi", "mno"};
+        System.out.println("firstList.containsAll(Arrays.asList(anotherUnsortedSet)) =  "
+                + firstList.containsAll(Arrays.asList(anotherUnsortedSet)));
+
+        // Use indexOf to get first matching element
+        System.out.println("secondList.indexOf(\"jkl\") =  "
+                + secondList.indexOf("jkl")); // unlike String, indexOf and lastIndexOf does not include offset for List.....
+
+        // Use lastIndexOf to to get last matching element
+        System.out.println("secondList.lastIndexOf(\"jkl\") =  "
+                + secondList.lastIndexOf("jkl")); // unlike String, indexOf and lastIndexOf does not include offset for List.....
+    }
+
+---------------------------------------------------------------------------------
+############## Array data manipulation ###############
+
+
+1- fill, setAll, sort, parallelPrefix , example:
+   note: manipulating array includes only changing its values, and NOT its array size....
+
+    public static void main(String[] args) {
+        System.out.println("--- Manipulating data with Arrays static methods");
+
+        // Create array of Integer
+        Integer[] intArray = new Integer[10];
+        System.out.println("Array values initially: "
+                + Arrays.toString(intArray));
+
+        // Fill array with a single value
+        Arrays.fill(intArray, 5);
+        System.out.println("Array values after fill: "
+                + Arrays.toString(intArray));
+
+        // You can fill a partial range with Arrays.fill overloaded method
+        int partialFillValue = 9;
+        Arrays.fill(intArray, 5, 10, partialFillValue);
+        System.out.println("Array values after partial fill: "
+                + Arrays.toString(intArray));
+
+        // setAll was introduced in Java 8
+        // It uses lambda expressions, but demonstrates sample here
+        Arrays.setAll(intArray, (index) -> index + 1);
+        System.out.println("Array values after setAll: "
+                + Arrays.toString(intArray));
+
+        // You can sort non primitive data type arrays in reverse this way
+        Arrays.sort(intArray, Collections.reverseOrder());
+        System.out.println("Array values after reverse sort: "
+                + Arrays.toString(intArray));
+
+        // Similar to setAll and parallelSetAll, except this method
+        // supports binary operations.
+        Arrays.parallelPrefix(intArray, (left, right) -> left + right);
+        System.out.println("Array values after parallelPrefix: "
+                + Arrays.toString(intArray));
+
+    }
+
+2- Arrays.asList              /*************** TRICKY ***********/
+   its a mirror of the original array and any changes u do on the list it will be also
+   reflected on the original value....
+
+
+ public static void main(String[] args) {
+        // Set up some test data for use in our tests
+        String[] primaryColors = {"red", "blue", "yellow"};
+        String[] secondaryColors = {"green", "orange", "purple"};
+
+        System.out.println("--- Manipulating array data using a List," +
+                " backed by an array");
+
+        // The Arrays.asList returns a list backed by the array;
+        List<String> colorList = Arrays.asList(primaryColors);
+        System.out.println("colorList: " + colorList.toString()); // colorList: [red, blue, yellow]
+
+        // Use get method to get an element in the array
+        String firstColor = colorList.get(0);
+        System.out.println("firstColor is " + firstColor); // firstColor is red
+
+        // Sort the array via the List reference
+        colorList.sort(String.CASE_INSENSITIVE_ORDER);
+        System.out.println("\ncolorList after sort: "
+                + colorList.toString()); // colorList after sort: [blue, red, yellow]
+
+        System.out.println("primaryColors "
+                + Arrays.toString(primaryColors)); // primaryColors [blue, red, yellow], notice: the order also has changed in original array....
+
+        // Set the value of an array element using set method
+        colorList.set(0, "cyan");
+        System.out.println("\ncolorList after after changing 1st value : "
+                + colorList.toString()); // colorList after after changing 1st value : [cyan, red, yellow]
+
+        System.out.println("primaryColors "
+                + Arrays.toString(primaryColors)); // primaryColors [cyan, red, yellow]
+
+        // Use replaceAll method to change all values in the array via
+        // List reference
+        colorList.replaceAll((s) -> s + "ish");
+        System.out.println("\ncolorList  after replacing all values: "
+                + colorList.toString()); // colorList  after replacing all values: [cyanish, redish, yellowish]
+
+        System.out.println("primaryColors " + Arrays.toString(primaryColors)); // primaryColors [cyanish, redish, yellowish]
+
+        // And what happens when we change underlying array?
+        primaryColors[0] = "blueish";
+        System.out.println("\ncolorList after array changed: "
+                + colorList.toString()); // colorList after array changed: [blueish, redish, yellowish]
+
+        System.out.println("primaryColors "
+                + Arrays.toString(primaryColors)); // primaryColors [blueish, redish, yellowish]
+
+        //colorList.add("black"); // it will throw exception bcoz u cant add or remove from the list....
+        // again, Arrays.asList is just a mirror of the original array and u cant change the array size during runtime bcoz its fixed....
+        //colorList.remove(0); // it will throw java.lang.UnsupportedOperationException
+
+    }
+
+3- List.of and List.copyOf returns immutable list, MEANS U CANT CHANGE THE LIST...
+   note #1:
+   List.of and List.copyOf will take a snapshot of the original value,
+   and any changes happened on the original value WILL NOT be reflected on
+   the copied list..
+
+   note #2:
+   u cant change, add or remove the values in List.of and List.copyOf (i notice this only for Strings and primitive types, how about if u have List of objects
+   and u try to change the attributes in object? )
+
+      example for note #1;
+
+       public static void main(String[] args) {
+           // Set up some test data for use in our tests
+           String[] primaryColors = {"red", "blue", "yellow"};
+           String[] secondaryColors = {"green", "orange", "purple"};
+
+           System.out.println("\n--- List.of and List.copyOf Examples");
+
+           // List.of method can take an array and make it a list
+           List secondColorList = List.of(primaryColors);
+
+           // List.copyOf method takes a list and makes another list
+           List thirdColorList = List.copyOf(Arrays.asList(primaryColors));   /*********** TRICKY : List.copyOf take only list in constructor ********/
+
+           System.out.println("\nsecondColorList : "
+                   + secondColorList.toString()); // secondColorList : [red, blue, yellow]
+
+           System.out.println("thirdColorList : "
+                   + thirdColorList.toString()); // thirdColorList : [red, blue, yellow]
+
+           // Change value on original array
+           primaryColors[0] = "blue";
+
+           System.out.println("\nprimaryColors after making first element blue: "
+                   + Arrays.toString(primaryColors)); // primaryColors after making first element blue: [blue, blue, yellow]
+
+           System.out.println("secondColorList after array changed : "
+                   + secondColorList.toString()); // secondColorList after array changed : [red, blue, yellow]
+
+           System.out.println("thirdColorList after array changed : "
+                   + thirdColorList.toString()); // thirdColorList after array changed : [red, blue, yellow]
+
+           // secondColorList created from List.of method is immutable
+           try {
+               secondColorList.set(0, "cyan");
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+
+           // thirdColorList created from List.copyOf method is also immutable
+           try {
+               thirdColorList.set(0, "cyan");
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+
+           try {
+               thirdColorList.remove(0);
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+
+           try {
+               thirdColorList.add("white");
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+
+       }
+
+   example for note #2;
+
+       public static void main(String[] args) {
+           // Set up some test data for use in our tests
+           Person[] primaryNamesArrays = {new Person("ahmad", 12), new Person("Ismail", 15), new Person("Yamen", 17)};
+
+           // List.of method can take an array and make it a list
+           List primaryNamesList = List.of(primaryNamesArrays);
+
+           System.out.println("\nprimaryNamesList : "
+                   + primaryNamesList.toString());
+
+
+           // Change value on original array
+           primaryNamesArrays[0].name = "ahmad-ish";
+
+           System.out.println("\nprimaryNamesArrays after making first element ahmad: "
+                   + Arrays.toString(primaryNamesArrays)); // Person{name='ahmad-ish', age=12}, Person{name='Ismail', age=15}, Person{name='Yamen', age=17}]
+
+           System.out.println("primaryNamesList after array changed : "
+                   + primaryNamesList.toString()); // [Person{name='ahmad-ish', age=12}, Person{name='Ismail', age=15}, Person{name='Yamen', age=17}], for objects the value also been reflected in list too !
+
+           /************
+            * changing the object attributes will be also reflected on the list.of and list.copyOf.....
+            *
+            * **********/
+
+           try {
+               Person e = new Person("imposter", 23);
+               // primaryNamesList.set(0, e);// replacing ahmad-ish with imposter! , it will throw java.lang.UnsupportedOperationException
+               // primaryNamesList.add(e); // list.Of is immutable and cant change its size or add new element or remove from it!
+               //primaryNamesList.remove(0); // list.Of is immutable and cant change its size or add new element or remove from it!
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+
+       }
+
+---------------------------------------------------------------------------------
+############## Array data transformation ###############
+
+1- Arrays.copyOf are mutable
+
+    public static void main(String[] args) {
+
+        System.out.println("-----------Using Arrays.copyOf ----------");
+
+        // Create an array of Integer
+        Integer[] originalArray = new Integer[10];
+
+        // Initialize values to 1 - 10
+        Arrays.setAll(originalArray, (index) -> index + 1);
+        System.out.println("integerArray values = "
+                + Arrays.toString(originalArray));
+
+        // Create Copy of array, same size
+        Integer[] copiedArray =
+                Arrays.copyOf(originalArray, originalArray.length);
+
+        System.out.println("copiedArray values = "
+                + Arrays.toString(copiedArray));
+
+        // Create Copy of of an array, trimmed to specified size
+        Integer[] trimmedArray = Arrays.copyOf(originalArray, 7);
+
+        // Copy array to larger array, extra elements get default values
+        Integer[] widenedArray = Arrays.copyOf(originalArray, 15);
+
+        System.out.println("trimmedArray values = "
+                + Arrays.toString(trimmedArray));
+
+        System.out.println("widenedArray values = "
+                + Arrays.toString(widenedArray));
+
+        // Create Copy of defined portion of Array
+        Integer[] croppedArray = Arrays.copyOfRange(originalArray, 2, 6);
+        System.out.println("croppedArray values = "
+                + Arrays.toString(croppedArray));
+
+        croppedArray[0] = 5;
+        System.out.println("croppedArray values after a change = "
+                + Arrays.toString(croppedArray));
+
+    }
+
+
+2- subList          /*********** TRICKY **************/
+  note:
+  when u use List list = new ArrayList<>(Arrays.asList(arr)) it will consider the element inside the constructor as ONE item which is array of int...
+  bcoz u declare it as plain list.....
+
+    public static void main(String[] args) {
+
+        int[] arr = new int[10];
+        Arrays.setAll(arr, index -> index + 1); // note that arr here MUST be initialized before use...
+        System.out.println("original array= "+Arrays.toString(arr));
+
+        List list = new ArrayList<>(Arrays.asList(arr)); // note that arr will be add as ONE element in the list and not 10 elements....
+
+        List subList = list.subList(0,1);
+
+        System.out.println("sub list array = "+subList);
+
+        // lets change the value in subList and see if it will be reflected on original List as well?
+
+        subList.set(0,11);
+        System.out.println("sub list = "+subList);
+        System.out.println("original List = "+list);
+        System.out.println("array = "+Arrays.toString(arr));
+    }
+
+
+3- another example about subList : /********************* TRICKY *******************/
+
+
+    public static void main(String[] args) {
+
+        List<String> list = new ArrayList<>();
+        list.add("One");
+        list.add("Two");
+        list.add("Three");
+        list.add("Four");
+        list.add("Five");
+
+        List<String> subList = list.subList(0,3);
+
+        System.out.println("Sub list = "+subList);
+
+        // lets change some value in sub list and see if it will be reflected in original list...
+        subList.set(0,"One-ish");
+
+        System.out.println("Sub list after update = "+subList); // [One-ish, Two, Three]
+        System.out.println("list after update = "+list); // [One-ish, Two, Three, Four, Five]
+
+        // we notice that subList is a mirror of the original value, and any changes u do at subList will be also
+        // reflected on original list....
+
+        // now lets try to add/remove from subList....
+
+        subList.add("Another three");
+
+        System.out.println("sub list after add = "+subList); // sub list after add = [One-ish, Two, Three, Another three]
+        System.out.println("list after add = "+list); //list after add = [One-ish, Two, Three, Another three, Four, Five]
+
+        // lets try to add in original list and see if the new element will appear in sub list ?
+
+        //list.add(1,"another one");
+        //System.out.println("sub list after add = "+subList); // it will throw java.util.ConcurrentModificationException bcoz u r updating the original list....
+
+        subList.remove(0);
+        System.out.println("sub list after remove = "+subList); // [Two, Three, Another three]
+        System.out.println("list after remove = "+list); // [Two, Three, Another three, Four, Five]
+
+        /***********
+         * in subList its a mirror of the original list and any changes
+         * u do at subList or list it will be reflected on both side,,,,
+         *
+         * one thing to note that u cant remove,add to original list
+         * then print subList bcoz it will throw an exception : java.util.ConcurrentModificationException
+         *
+         * but u can add/remove to subList and it will be reflected on original list too!!
+         *
+         * *********/
+    }
+
+
+4- Shallow copy and deep copy:
+
+   In shallow copy, only fields of primitive data type are copied while the objects references are not copied.
+   Deep copy involves the copy of primitive data type as well as object references
+
+   https://www.javatpoint.com/shallow-copy-java#:~:text=A%20shallow%20copy%20of%20an,said%20to%20use%20reference%20semantics.
+
+
+
+public class Test {
+
+
+    public static void printArray(String arrayName, int[][] inputArray) {
+        System.out.println("------------------------------------------");
+        System.out.println(arrayName + " Reference: " + inputArray);
+        for (int row = 0; row < inputArray.length; row++) {
+            printRow(arrayName, inputArray[row], row);
+        }
+    }
+
+    public static void printRow(String arrayName, int[] inputArray, int row) {
+        System.out.println(arrayName + " : " + inputArray + " : Row "
+                + (row + 1) + " :  " + Arrays.toString(inputArray));
+
+    }
+
+    public static void main(String[] args) {
+
+        // Create a 2-d array
+        int[][] intArray = new int[2][10];
+
+        // Let's see what this looks like using the method we created
+        printArray("intArray", intArray);
+
+        // You can also print the 2-d array Using Arrays.deepToString()
+        System.out.println("Printing a multi-dimensional array using " +
+                "Arrays.deepToString()");
+        System.out.println(Arrays.deepToString(intArray));
+
+
+        // If you use an array initializer, formatting this way
+        // helps readability
+        int[][] variableCols = {
+                {1, 2, 3},
+                {5, 6, 7, 8},
+                {0, 3, 4, 6},
+                {1}
+        };
+        printArray("variableCols", variableCols);
+
+        // Clone a copy of your 2-d array, but it is a shallow clone.
+        int[][] clonedArray = variableCols.clone();
+        variableCols[2][3] = 10000;
+
+        printArray("clonedArray", (int[][]) clonedArray);
+
+        // Arrays.copyOf works here, but need to cast back to 2-d array
+        int[][] copiedCopy = (int[][]) Arrays.copyOf(variableCols,
+                variableCols.length);
+        printArray("copiedCopy", copiedCopy);
+
+        System.out.println("-------------------------------------------");
+        // Comparing our arrays, row 3....
+        printRow("variableCols", variableCols[2], 2);
+        printRow("copiedCopy", ((int[][]) copiedCopy)[2], 2);
+        printRow("clonedArray", ((int[][]) clonedArray)[2], 2);
+
+        System.out.println("-------------------------------------------");
+        // We can take our shallow copy and make it 'deep' manually.
+        for (int i = 0; i < clonedArray.length; i++) {
+            clonedArray[i] = clonedArray[i].clone();  // clone each element
+        }
+        // Change data on one of our original data points.
+        variableCols[2][3] = 10000;
+
+        // Comparing our arrays, row 3....
+        printRow("variableCols", variableCols[2], 2);
+        printRow("clonedArray", clonedArray[2], 2);
+        System.out.println("-------------------------------------------");
+
+    }
+}
+
+
+5- some out of ordinary in arrays:
+
+    public static void main(String[] args) {
+
+        int a = 0;
+        int b = 0;
+        // You can assign an int variable to a long
+        long myLong = a;
+        System.out.println("myLong = " + myLong);
+
+        // And you can do this:
+        long[] longArray = {0, 1, 2, 3, 4};
+        System.out.println("longArray = " +
+                Arrays.toString(longArray));
+
+        // And this:
+        long[] myLongArray = new long[2];
+        myLongArray[0] = a;
+        myLongArray[1] = b;
+        System.out.println("myLongArray = " +
+                Arrays.toString(myLongArray));
+
+        // And you know you can do this.  Java autoboxes
+        Integer aInteger = a;
+        Integer bInteger = b;
+        System.out.println("aInteger = " + aInteger);
+
+        Integer[] integerArray = {0, 1, 2, 3, 4};
+        System.out.println("integerArray = " +
+                Arrays.toString(integerArray));
+
+        Integer[] myIntegerArray = new Integer[2];
+        // You can mix and match Integer, int here
+        myIntegerArray[0] = aInteger;
+        myIntegerArray[1] = b;
+        System.out.println("myIntegerArray = " +
+                Arrays.toString(myIntegerArray));
+
+                                                       /*************** TRICKY *****************/
+//        Long[] newLongArray = new int[2]; // it will show a compiler error
+//        Integer[] newIntegerArray = new int[2]; // it will show a compiler error
+
+//        int[] intArray = {0, 1, 2, 3, 4};
+//        int misMatchedIndex = Arrays.mismatch(intArray, integerArray); // it will show a compiler error
+//        boolean theSame = Arrays.equals(intArray, integerArray); // it will show a compiler error
+//        int compared = Arrays.compare(intArray, integerArray); // it will show a compiler error
+
+
+
+        // its okay to use mismatch and equals to compare between two same param type or is A type
+        System.out.println("\n---- Test methods with common super class");
+        Number[] myNumberArray = {0, 1, 2, 4, 5};
+        System.out.println("Arrays.mismatch(myNumberArray, integerArray) = "
+                + Arrays.mismatch(myNumberArray, integerArray));
+        System.out.println("Arrays.equals(myNumberArray, integerArray) = "
+                + Arrays.equals(myNumberArray, integerArray));
+
+//        int compare = Arrays.compare(myNumberArray, integerArray); // Arrays.compare will
+// compare using comparable.compare , and Number does not implement compareable thats why we cant compare it with integer.....
+
+
+    }
+
+6- List.of and List.copyOf:
+                             /****************** VERY TRICKY *******************/
+    public static void main(String[] args) {
+
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+
+        List firstList = List.copyOf(Arrays.asList(firstString));
+        List secondList = List.of(firstList);
+
+        System.out.println("firstList = " + firstList.toString()); // notice the output here
+        System.out.println("secondList = " + secondList.toString()); // notice the output here
+
+        Object o = firstList.get(0);
+        System.out.println(o.getClass().getName());
+
+        o = secondList.get(0);
+        System.out.println(o.getClass().getName());
+
+    }
+
+  List.of can take an array of element and create a list out of it,
+          or it can take variable argument list of objects.
+          and bcoz we did not pass an array to it in the code above,
+          it assumed it was a var args and created an array of 1 element...
+
+
+7- list toArray() method...
+
+ public static void main(String[] args) {
+
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+
+        List firstList = List.copyOf(Arrays.asList(firstString));
+        List secondList = List.of(firstList);
+
+
+        // Now let's look at toArray
+        System.out.println("\n--------  toArray examples ---------");
+        int arrayLength = firstList.size(); // arrayLength changes results
+                          // try to change the arrayLength to less than list length (5)... and see output for aArray, bArray, nextArray....
+                          // try to change the arrayLength to more than list length (10) ...and see output for aArray, bArray, nextArray....
+
+        // Set up a new array which we will pass to toArray
+        String[] aArray = new String[arrayLength];
+
+        // Calling toArray without assigning returned array to a variable;
+        firstList.toArray(aArray);
+        System.out.println("aArray array  = " + Arrays.toString(aArray)); // [abc, def, ghi, jkl, mno, pqr, stu, vwx, yz]
+
+        // Set up another new array which we will pass to toArray
+        String[] bArray = new String[arrayLength];
+
+        // Calling toArray assigning returned array to a variable;
+        String[] nextArray = (String[]) firstList.toArray(bArray);
+        System.out.println("bArray array  = "
+                + Arrays.toString(bArray)); // [abc, def, ghi, jkl, mno, pqr, stu, vwx, yz]
+
+        System.out.println("nextArray array  = "
+                + Arrays.toString(nextArray)); // [abc, def, ghi, jkl, mno, pqr, stu, vwx, yz]
+
+        System.out.println("nextArray.equals(bArray) = "
+                + nextArray.equals(bArray)); // true
+
+        System.out.println("\n------- Final toArray examples --------");
+        // If you always want an array that represents the elements
+        // exactly in the list, you can pass a 0 length array
+        String[] arrayRepresentation =
+                (String[]) firstList.toArray(new String[0]);
+
+        System.out.println("arrayRepresentation array  = " +
+                Arrays.toString(arrayRepresentation));
+
+        // You can call toArray with no parameter, it returns an array of Object
+        Object[] objectArray = firstList.toArray();
+        System.out.println("objectArray array  = " +
+                Arrays.toString(objectArray));
+
+        String[] newRepresentation = (String[]) objectArray;
+        System.out.println("newRepresentation array  = " +
+                Arrays.toString(newRepresentation));
+    }
+
+8- tricky question:
+
+public class Test {
+    public static void main(String[] args) {
+
+        int[] aArray = new int[3];
+        Integer[] bArray = new Integer[3];
+        aArray[2] = 1;
+        bArray[0] = 1;  // Line 1
+
+        for (int a : aArray) {
+            System.out.print(a + " ");
+        }
+        System.out.println("");
+        for (int b : bArray) {  // Line 2
+            System.out.print(b + " ");  // Line 3
+        }
+
+    }
+}
+

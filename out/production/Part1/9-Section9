@@ -1,0 +1,1088 @@
+############# Reusing Implementation through inheritance #################
+
+1- example about inheritance...
+// just run and see the result...
+
+
+import java.time.LocalDate;
+
+//  Animal is our most generic class.
+class Animal {
+
+    // We describe elements that all instances would have
+    private String name = "Unspecified";
+    private String owner = "Unspecified";
+    private String breed = "Unspecified";
+    private AnimalType type = AnimalType.UNKN;
+
+    // It could be argued a locator chip may or may not be on every pet
+    // but we add it here
+    private LocalDate chipDate;
+
+    // You can define an enum within a class.  Here we
+    // define some of the animals we expect to see as subclasses
+    static enum AnimalType {
+        CAT, DOG, HORSE, HAMSTER, GOAT, SHEEP, UNKN;
+    }
+
+    // Constructor is the means we'll use to populate properties
+    // on Animal
+    Animal(String name, String owner, String breed, AnimalType type) {
+        this.name = name;
+        this.owner = owner;
+        this.breed = breed;
+        this.type = type;
+    }
+
+    // toString return's a nice formatted String that describes Animal
+    public String toString() {
+        return this.owner + "'s " + this.type + " is a " +
+                this.breed + " named " + this.name;
+    }
+
+    // We limit getters/setters for demo purposes here
+    // just to this one particular attribute
+    public LocalDate getChipDate() {
+        System.out.println("parent getChipDate");
+        return chipDate;
+    }
+
+    public void setChipDate(LocalDate chipDate) {
+        this.chipDate = chipDate;
+    }
+
+    // static method describing what steps are required to examine
+    // the Animal
+    public static void examineAnimal() {
+        System.out.println("Check eyes");
+        System.out.println("Check teeth");
+        System.out.println("Check coat");
+    }
+}
+
+class Dog extends Animal {
+
+    // Supplement fields
+    private int pedigreeId;
+
+    // Hide field on superclass
+    private LocalDate chipDate;
+
+    // Constructors are not inherited, create one, pass thru to super
+    public Dog(String name, String owner, String breed,
+               AnimalType type, int pedigreeId) {
+        super(name, owner, breed, type);
+        this.pedigreeId = pedigreeId;
+    }
+
+    // override toString method and extend functionality of the superclass
+    public String toString() {
+        String str = super.toString();
+        if (pedigreeId > 0) {
+            str += " (pedigree Id = " + pedigreeId + ")";
+        }
+        return str;
+    }
+
+    public static void examineAnimal() {
+        System.out.println("Examine for breathing problems");
+    }
+
+    public LocalDate getChildChipDate() {
+        System.out.println("child getChildChipDate");
+        return chipDate;
+    }
+
+    // Hides method on parent
+    public void setChipDate(LocalDate chipDate) {
+        this.chipDate = chipDate;
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Create a Dog
+        Dog pug = new Dog("George", "Ralph", "Pug", Animal.AnimalType.DOG, 775533);
+
+        // Call a method on the superclass from the subclass instance
+        pug.setChipDate(LocalDate.now());
+
+        // Call the overridden method (note that toString() is implied
+        System.out.println(pug); // Ralph's DOG is a Pug named George (pedigree Id = 775533)
+
+        // Call the overridden method
+        System.out.println("Chip Date = " + pug.getChipDate());
+
+        // Try to force the call to the parent's method
+        Animal a = pug; // assigning child to parent...and then calling getChipDate() which will call the parent method.
+        // if getChipDate was override in child then it will call the child method NOT the parent method.
+
+        System.out.println("Chip Date = " + a.getChipDate());
+
+        // Call the supplemented method
+        System.out.println("Chip Date = " + pug.getChildChipDate());
+
+        // Call the static methods
+        Animal.examineAnimal();
+        Dog.examineAnimal();
+    }
+}
+
+
+2-                     /********** TRICKY **********/
+we cant override a static method from parent class,
+or if u have instance method in parent and u try to override this method in subclass
+and make it static this will also show a compiler error...
+
+key take note here is when u have override method u cant make any of the method (from parent or subclass)
+as static...
+its okay to make BOTH of them static but one only it will introduce a compiler error...
+
+class Animal {
+
+    public static void examineAnimal() {
+        System.out.println("Check eyes");
+        System.out.println("Check teeth");
+        System.out.println("Check coat");
+    }
+}
+
+class Dog extends Animal {
+    // cant override a static method from parent,
+    // the way to fix this either by removing static from parent, or
+    // make subclass method as static too...
+    public /*static*/ void examineAnimal() {
+        System.out.println("Check eyes");
+        System.out.println("Check teeth");
+        System.out.println("Check coat");
+    }
+}
+
+
+3- TRICKY Question:
+refer to pkga.Child and pkgb.Parent...
+its about override method with more restrictive modifier...
+
+-------------- Parent.java source code ------------------
+
+package pkgb;
+
+public class Parent{
+
+    protected static String name = "ABC";
+
+    protected void printName() {
+        System.out.println(name);
+    }
+    protected static String getName() {
+        return name;
+    }
+}
+--------------------------
+AND
+-------------- Child.java source code ------------------
+
+package pkga;
+
+import pkgb.Parent;
+
+public class Child extends Parent {
+    static String name = "DEF";
+
+     //**   Insert code here **//
+
+    public static void main(String[] args) {
+        System.out.println(new Child().getName());
+    }
+}
+Which method when replacing  //**   Insert code here **// will print "DEF" as the output. Pick all that apply
+
+A. public static String getName() {  return Parent.name;    }
+
+B. private static String getName() {  return Child.name;    }
+
+C. protected static String getName() {  return name;    } // Correct answer....
+
+D. public String getName() {   return this.name;    }
+
+E. static String getName() {   return name;    }
+
+F. None of the above
+
+-----------------------------------------------------
+############### Abstract class ####################
+
+1- abstract rules:                       /**************** momorize *******************/
+   - any class that has an abstract method must be declared abstract.
+   - any subclass must implement ALL of the abstract class's abstract methods.
+   - any abstract class does not actually have to have any abstract methods.
+   - abstract class CANNOT be declared as final.
+   - abstract class CANNOT be declared as private.
+   - abstract method CANNOT be declared as private.
+   - abstract method CANNOT be static, static method cannot be overriden,,,,
+   - u cant create abstract constructor...
+
+     abstract class TestAbstract {
+         public TestAbstract(){
+
+         }
+         // public abstract TestAbstract(); // compiler error, cant create abstract constructor...
+
+     }
+
+
+- example about abstract and final method, note that final method cant be overridden
+
+
+abstract class AbstractExample {
+
+    // A constant can be defined on an abstract class
+    public static final String ABSTRACT_CONSTANT = "Abstract";
+
+    // a final static method can be declared on an abstract class
+    public static final void doThisAndOnlyThis() {
+        System.out.println("static final method is ok abstract class");
+        System.out.println("My constant is " + ABSTRACT_CONSTANT);
+    }
+
+    // This is a final method, but is not static.  This means any
+    // subclass can call it, but they cannot override it.
+    public final void doThisAndThat() {
+        System.out.println("My method may be final, " +
+                "but it can still support polymorphism");
+        System.out.println(doThis() + " and " + doThat());
+    }
+
+    // Implementing classes need to implement abstract methods.
+    abstract String doThis();
+
+    abstract String doThat();
+}
+
+// ConcreteExample implements the two abstract methods it inherits.
+class ConcreteExample extends AbstractExample {
+
+    String doThis() {
+        return "I do this";
+    }
+
+    String doThat() {
+        return "I do that";
+    }
+}
+
+// Now we test our final methods...
+public class Test {
+
+    public static void main(String[] args) {
+        // Call to the final static method...
+        ConcreteExample.doThisAndOnlyThis();
+
+        ConcreteExample c = new ConcreteExample();
+        // Call to the final method defined on the abstract parent.
+        c.doThisAndThat();
+    }
+}
+
+3- NOTE:                       /*************** memorize ****************/
+when u have ONLY one private constructor , that mean u CANNOT extend this class.....
+
+- example below...
+
+// Abstract Class
+abstract class ConceptualClass {
+
+    // protected no args Constructor
+    // if constructor is private that means this class CANNOT be extended......
+    /*private*/ protected ConceptualClass() {
+
+    }
+
+    // abstract method
+    public abstract void printSomething(String s1);
+}
+
+// Concrete Class
+class RealClass extends ConceptualClass {
+
+    // implements abstract method
+    public void printSomething(String s1) {
+        System.out.println(s1);
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Create an instance of Concrete class with no args constructor
+        RealClass c = new RealClass();
+
+        // Execute method on object with the standard text.
+        c.printSomething("Hello World");
+
+    }
+}
+
+- but if u have another constructor that is protected/package/public then u can extend this class...
+   notice here below we have 2 constructor at parent, one is private and other one is protected, so its okay to extend this class,,,,
+
+
+// Abstract Class
+abstract class ConceptualClass {
+
+    // protected no args Constructor
+    private ConceptualClass() {
+
+    }
+
+    protected ConceptualClass(String s) {
+        System.out.println("hello from parent constructor...");
+    }
+
+    // abstract method
+    public abstract void printSomething(String s1);
+}
+
+// Concrete Class
+class RealClass extends ConceptualClass {
+
+    RealClass() {
+        super("hello parent!");
+    }
+
+    RealClass(String s) {
+        super(s);
+    }
+
+    // implements abstract method
+    public void printSomething(String s1) {
+        System.out.println(s1);
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Create an instance of Concrete class with no args constructor
+        RealClass c = new RealClass();
+
+        // Execute method on object with the standard text.
+        c.printSomething("Hello World");
+
+    }
+}
+
+4- TRICKY QUESTION             /***************  TRICKY ************/
+
+key take note here, if u have abstract class and your subclass is also abstract class then subclass DOES NOT have
+to implement method from parent class.
+
+u cant also create instance from abstract class...
+
+abstract class AbstractClass {
+
+    final void myOwnMethod() {  // Line 1
+        System.out.println("my own");
+    }
+
+    void familyMethod() {
+        System.out.println("my family");
+        printFamilyTree();  // Line 2
+    }
+
+    abstract void printFamilyTree();
+}
+
+public abstract class Test extends AbstractClass {  // Line 3
+    public static void main(String[] args) {
+        printFamilyTrees();
+    }
+
+    protected static void printFamilyTrees() {   // Line 4
+        Test t = new Test();   // Line 5 , compiler error here.....
+        t.printFamilyTree();  // Line 6
+    }
+}
+
+
+-----------------------------------------------------
+############### Polymorphism ####################
+
+if u want to override a method from parent, the subclass must exactly override this method
+for return type must be same or is A type...
+for name of method must be same,
+for method params type MUST be same,
+
+overridden method should be less restrictive that parent...
+
+// example... just read and run it
+
+class BaseClass {
+    public void goodMethod() {
+        System.out.println("BaseClass executing good method");
+    }
+
+    public void printInformation(CharSequence s) {
+        System.out.println("BaseClass prints " + s);
+    }
+
+    public CharSequence getInformation() {
+        return getClass().getName();
+    }
+}
+
+class ExtendedClass extends BaseClass {
+
+    public void goodMethod() {
+        super.goodMethod();
+        System.out.println("AND ExtendedClass executing a better method");
+    }
+
+
+    // cant make the access modifier here less restrictive than parent...
+    // this is not override method bcoz it accept String NOT CharSequence....                  /***********  tricky **********/
+    public void printInformation(String string) {
+        System.out.println("ExtendedClass prints " + string);
+    }
+
+    // cant make the access modifier here less restrictive than parent...
+    // this is override method bcoz return type Is A, note that String is a type of CharSequence...     /***********  tricky **********/
+    public String getInformation() {
+        return getClass().getName();
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        ExtendedClass e = new ExtendedClass();
+        e.goodMethod();
+        e.printInformation(e.getInformation()); // here it calls subclass method bcoz we pass a string...
+        e.printInformation((CharSequence) e.getInformation()); // here it called the parent method bcoz we cast it to CharSequence...
+    }
+}
+
+2- throwing exception and override...
+if the parent method throws a Checked exception in method signature,
+then the subclass overridden method can either throw the same exception or more specific exception.
+or he can also not to throw exception so its optional.....
+
+class BaseClass {
+    public void goodMethod() throws IOException {
+        System.out.println("BaseClass executing good method");
+    }
+}
+
+class ExtendedClass extends BaseClass {
+
+    public void goodMethod() throws FileNotFoundException /* or IOException*/ {
+        System.out.println("AND ExtendedClass executing a better method");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) throws IOException {
+        ExtendedClass e = new ExtendedClass();
+        e.goodMethod();
+    }
+}
+
+4- if parent method did not throw a checked exception and your subclass
+   overridden method want to throw a checked exception then its a compiler error...
+   bcoz the parent method did not declare the checked exception in his method signature....
+
+class BaseClass {
+    public void goodMethod() {
+        System.out.println("BaseClass executing good method");
+    }
+}
+
+class ExtendedClass extends BaseClass {
+
+    public void goodMethod() throws FileNotFoundException /* or IOException*/ {
+        System.out.println("AND ExtendedClass executing a better method");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) throws IOException {
+        ExtendedClass e = new ExtendedClass();
+        e.goodMethod();
+    }
+}
+
+5- TRICKY QUESTION                      /************ TRICKY ***********/
+
+-------------- Test.java source code ------------------
+
+class TestParent {
+    public void aMethod() {}
+    public Number aMethod(CharSequence s) { return null; }
+    public Object aMethod(Object o) throws NullPointerException { return null; } // notice that NPE is unchecked exception......
+}
+
+public class Test extends TestParent {
+
+//** Insert code here **//
+}
+Which method when replacing  //**   Insert code here **// will override a method in TestParent.
+
+A.  public Object aMethod() {  return null; }
+
+B.  public String aMethod(Object o) throws Exception { return null; } // Exception its a checked exception.... and parent did not throws a checked exception....
+
+C.  public String aMethod(Object o) { return null; }  // correct answer
+
+D.  public int aMethod(CharSequence s) { return 0; }
+
+E.  public void aMethod(String s) { return; }
+
+F.  None of the above
+
+
+------------------------------------------------------------------------
+############## Polymorphism casting object vs reference ###############
+
+down-casting:
+casting object to more specific type from defined type,
+the downcast must meet the 'isA' criteria.
+
+upcasting:
+casting to more generic type..
+
+// example about reference down-casting ....
+
+// Animal is our base class
+class Animal {
+    String name ="Animal";
+
+    public void printAnimal() {
+        System.out.println("I am an animal");
+    }
+
+    public void makeNoise() {
+        System.out.println("Animal noise");
+    }
+}
+
+// Dog is a subclass of Animal
+class Dog extends Animal {
+    String name ="Dog";
+
+    public void printDog() {
+        System.out.println("I am a dog");
+    }
+    public void makeNoise() {
+        System.out.println("Dog noise");
+    }
+}
+
+// Cat is also a subclass of Animal
+class Cat extends Animal {
+    public void printCat() {
+        System.out.println("I am a cat");
+    }
+    public void makeNoise() {
+        System.out.println("Cat noise");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Test dex = new Test();
+
+        // We create instances of Dog and Cat but assign them to
+        // variables of type Animal
+        Animal genericDog = new Dog();
+        Animal genericCat = new Cat();
+
+        // We cast now:
+        dex.testDog((Dog) genericDog);
+        dex.testCat((Cat) genericCat);
+
+        // Try the overloaded methods with
+        // specifically typed variables.
+        dex.testAnimal((Dog) genericDog);
+        dex.testAnimal((Cat) genericCat);
+
+        // Try the overloaded methods with
+        // generically typed variables.
+        dex.testAnimal(genericDog);
+        dex.testAnimal(genericCat);
+
+        //////////////////////////////
+
+        // notice here when we assign reference to parent class
+        // the overloaded method at subclass will be called,
+        // but when we try to call field name, it will print the PARENT one not ehe child one...
+
+        Dog d = new Dog();
+        Animal a = d;
+        a.makeNoise(); // Dog noise
+        System.out.println(a.name); // Animal
+    }
+
+    //Three Overloaded methods
+    public void testAnimal(Animal animal) {
+        System.out.println("Executing testAnimal with Animal type");
+        animal.printAnimal();
+    }
+
+    public void testAnimal(Cat cat) {
+        System.out.println("Executing testAnimal with Cat type");
+        cat.printAnimal();
+    }
+
+    public void testAnimal(Dog dog) {
+        System.out.println("Executing testAnimal with Dog type");
+        dog.printAnimal();
+    }
+
+    // Specifically Typed method calls
+    public void testDog(Dog dog) {
+        dog.printDog();
+    }
+
+    public void testCat(Cat cat) {
+        cat.printCat();
+    }
+}
+
+// another example about some invalid scenarios about downcasting....
+
+
+// Animal is our base class
+class Animal {
+    String name = "Animal";
+
+    public void printAnimal() {
+        System.out.println("I am an animal");
+    }
+
+    public void makeNoise() {
+        System.out.println("Animal noise");
+    }
+}
+
+// Dog is a subclass of Animal
+class Dog extends Animal {
+    String name = "Dog";
+
+    public void printDog() {
+        System.out.println("I am a dog");
+    }
+
+    public void makeNoise() {
+        System.out.println("Dog noise");
+    }
+}
+
+// Cat is also a subclass of Animal
+class Cat extends Animal {
+    public void printCat() {
+        System.out.println("I am a cat");
+    }
+
+    public void makeNoise() {
+        System.out.println("Cat noise");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Dog d = new Cat(); // compiler error
+        Dog d = new Dog();
+        Cat c = new Cat();
+
+        Test t = new Test();
+        //t.testAnimal((Cat) d); // compiler error, cant convert dog to cat
+        Animal a = c;
+        t.testAnimal((Dog) a);// runtime error class cast exception ....
+    }
+
+    //Three Overloaded methods
+    public void testAnimal(Animal animal) {
+        System.out.println("Executing testAnimal with Animal type");
+        animal.printAnimal();
+    }
+
+    public void testAnimal(Cat cat) {
+        System.out.println("Executing testAnimal with Cat type");
+        cat.printAnimal();
+    }
+
+    public void testAnimal(Dog dog) {
+        System.out.println("Executing testAnimal with Dog type");
+        dog.printAnimal();
+    }
+
+}
+
+######### upcasting....
+
+
+// Tree is the base class
+class Tree {
+    String type = "unknown";
+
+    String getTreeString() {
+        return "Tree";
+    }
+}
+
+// DeciduousTree is a subclass of Tree
+class DeciduousTree extends Tree {
+    String type = "deciduous";
+
+    String getTreeString() {
+        return "Leafy Tree";
+    }
+}
+
+// FruitTree is a subclass of Tree
+class FruitTree extends Tree {
+    String type = "fruit";
+
+    String getTreeString() {
+        return "Fruit Tree";
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+
+        Test upex = new Test();
+
+        // Create two specific trees
+        DeciduousTree mapleTree = new DeciduousTree();
+        FruitTree appleTree = new FruitTree();
+
+        // we upcast deciduousTree to its parent class
+        Tree genericTree = (Tree) mapleTree;
+
+        // Print mapleTree's type
+        System.out.println("Tree type = " + mapleTree.type);
+
+        // Let's upcast to use the generic Tree's type..
+        System.out.println("Tree type = " + ((Tree) mapleTree).type); // here it will call type from PARENT bcoz its field...
+
+        // Upcasting to pass object as a parameter
+        upex.printTreeType((Tree) appleTree); // here it will call subclass method.....
+
+//        Tree t = new Tree();
+//        DeciduousTree d = (DeciduousTree) t; // runtime error....
+
+        // this is valid....
+        Tree t1 = new DeciduousTree();
+        DeciduousTree d1 = (DeciduousTree) t1; // must cast....
+
+
+    }
+
+    public void printTreeType(Tree tree) {
+        System.out.println("Tree type = " + tree.getTreeString());
+    }
+}
+
+########### casting array of object....
+we will notice that if u have array of object with type A, then u
+try to cast it back again to array of type A then it will show runtime error...
+
+see the TRICKY tag below....
+
+
+import java.util.Arrays;
+
+public class Test {
+    // Just want a few classes to play with
+
+    static class BaseClass {
+        String name = "Base Case";
+
+        public String toString() {
+            return getClass().getName();
+        }
+    }
+
+    static class NextClass extends BaseClass {
+        String name = "Next Best Case";
+    }
+
+    // main method, we'll test out some more casting examples
+    public static void main(String[] args) {
+
+        // Let's create the most generic of arrays
+        Object[] myObjectArray = new Object[10];
+
+        // This fills an Object array with Objects that are NextClass
+        // It does not change the type of array to NextClass[]
+        Arrays.fill(myObjectArray, new NextClass());
+
+        // this is valid...
+        NextClass n1 = new NextClass();
+        BaseClass b1 = (BaseClass) n1;
+
+        // this is not valid...
+        BaseClass b2 = new BaseClass();
+        NextClass n2 = (NextClass) b2;
+
+        // You can put any type of Object in there
+        myObjectArray[5] = new StringBuilder("test");
+
+        System.out.println(myObjectArray.getClass().getTypeName());
+        System.out.println(Arrays.toString(myObjectArray));
+
+        // We are going to loop through our array and cast each
+        // object first to a NextClass to print the name attribute on
+        // NextClass, and then we cast to BaseClass to print the
+        // name attribute on the BaseClass
+        try {
+            for (Object o : myObjectArray) {
+                // We can cast to most specific class
+                NextClass n = (NextClass) o;
+                System.out.println(n.name);
+
+                // We can cast to less specific class if we prefer more
+                // generic name
+                BaseClass b = (BaseClass) o;
+                System.out.println(b.name);
+            }
+        } catch (Exception e) {
+            // Not to mention any object might be in your array...
+            e.printStackTrace(System.out);
+        }
+
+        // Next we'll create an array of mixed types, using the common
+        // denominator BaseClass
+        BaseClass mixedArray[] = new BaseClass[6];
+        // Fill half with NextClass
+        Arrays.fill(mixedArray, 0, 3, new NextClass());
+        // Fill half with BaseClass
+        Arrays.fill(mixedArray, 3, 6, new BaseClass());
+
+        System.out.println(Arrays.toString(mixedArray));
+        for (BaseClass n : mixedArray) {
+            // We cast if we want NextClass's more specific name...
+            System.out.println(n + ":" +
+                    // ternary conditional operator uses instanceof
+                    ((n instanceof NextClass) ? ((NextClass) n).name : n.name)
+            );
+        }
+
+        // Compiler let's you get away with it, it's feasible that
+        // that mixedArray could be populated with objects of its subtype only
+        // but JVM won't allow it                         /*************** TRICKY **************/
+//        NextClass[] nextArray = (NextClass[]) mixedArray;
+
+        // Let's actually fill it with just NextClass objects .
+//        Arrays.fill(mixedArray, new NextClass());
+//        // JVM still doesn't allow it                 /*************** TRICKY **************/
+//        NextClass[] nextArray2 = (NextClass[]) mixedArray;
+    }
+}
+
+
+----------------------------------------------------
+######### casting arrays and arrayList #############
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Test {
+
+    // Just want a few classes to play with
+
+    static class BaseClass {
+        String name = "Base Case";
+
+        public String toString() {
+            return getClass().getName();
+        }
+    }
+
+    static class NextClass extends BaseClass {
+        String name = "Next Best Case";
+
+        public String toString() {
+            return getClass().getName() + ": " + name;
+        }
+
+        public static void testIt(List<BaseClass> baseListParameter) {
+            System.out.println(baseListParameter);
+        }
+    }
+
+    public static void main(String[] args) {
+        // Raw types
+
+        //  Create ArrayList and assign to ArrayList variable
+        ArrayList rawList = new ArrayList();
+        // Declare a List variable
+        List aList;
+        // Assign ArrayList object to List variable:
+        aList = rawList;
+
+        // Typed generic lists
+
+        //  Create a typed ArrayList using BaseClass and assign to
+        //  ArrayList variable
+        ArrayList<BaseClass> baseList = new ArrayList<>();
+        // Declare a typed List variable using BaseClass as type
+        List<BaseClass> bList;
+        // Assign typed ArrayList object to typed List variable
+        bList = baseList;
+
+        // Add a NextClass object to the raw ArrayList
+        rawList.add(new NextClass());
+
+        // Add a NextClass object to the typed ArrayList
+        baseList.add(new NextClass());
+
+        // Print ArrayList and List variables.
+        System.out.println("We can use either variable to print the raw ArrayList");
+        System.out.println("-- aList = " + aList);
+        System.out.println("-- rawList = " + rawList);
+        System.out.println("We can use either variable to print the typed ArrayList");
+        System.out.println("-- bList = " + bList);
+        System.out.println("-- baseList = " + baseList);
+
+//        // Let's add the StringBuilder object to raw list
+        rawList.add(new StringBuilder("Hello"));
+//
+//        // Let's add the StringBuilder object to typed list
+     //   baseList.add(new StringBuilder("Hello"));
+
+        // We create variable of NextClass and assign it a new instance
+        // NextClass
+        NextClass nextClass = new NextClass();
+
+        // We create variable of BaseClass and assign it the nextClass
+        // variable - this is a good assignment as we know.  You can
+        // assign a more specific typed object to a less specifically
+        // typed variable.
+        BaseClass baseClass = nextClass;
+
+        // We now create an ArrayList of NextClass and assign it to a
+        // variable of ArrayList typed to NextClass.
+        ArrayList<NextClass> nextList = new ArrayList<>();
+        nextList.add(nextClass);
+
+        // We assign nextList to the raw ArrayList variable
+        rawList = nextList;
+        // We assign nextList to the raw List variable
+        aList = nextList;
+
+//        // We assign nextList to the typed ArrayList of BaseClass variable
+//        baseList = nextList;                         /**************** TRICKY *****************/
+//        // We assign nextList to the typed List of BaseClass variable
+//        bList = nextList;                             /**************** TRICKY *****************/
+
+        // Execute testIt method with List<BaseClass>
+        NextClass.testIt(bList);
+
+        // Execute testIt method with ArrayList<BaseClass>
+        NextClass.testIt(baseList);
+
+        // Execute testIt method with ArrayList<NextClass>
+//        NextClass.testIt(nextList);                     /**************** TRICKY *****************/
+
+        // Casting doesn't fix it
+//        baseList = ( ArrayList<BaseClass> )  nextList;
+//
+//        ArrayList<NextClass> anotherTest = ( ArrayList<NextClass> ) rawList;
+//
+//        ArrayList<NextClass> anotherTest = ( ArrayList<NextClass> ) baseList;
+
+        // No cast required, retrieving data from ArrayList, typed with
+        // NextClass
+        NextClass next = nextList.get(0);
+        System.out.println("next here is " + next);
+
+        // No cast required, retrieving data from ArrayList, typed with
+        // BaseClass
+        BaseClass base = baseList.get(0);
+        System.out.println("base here is " + base);
+        // need a cast still if retrieving more specifically typed object
+        next = (NextClass) baseList.get(0);
+        System.out.println("next here is " + next);
+
+        // Cast required, retrieving data from raw ArrayList
+        next = (NextClass) rawList.get(0);
+        System.out.println("next here is " + next);
+
+
+    }
+}
+
+
+11- TRICKY question .
+
+class Plant {}
+class Flower extends Plant {}
+public class Test {
+
+    public static void main(String[] args ) {
+
+        // Primitive Casting
+        float f1 = (float) 10.0;  // Line 1
+        float f2 = (float) 10.0f;  // Line 2
+        //float f3 = (float) f1/2.0;  // Line 3           /************* TRICKY *******/
+        float f4 = (float) f1/2.0f;  // Line 4
+
+        // Object Casting
+        Object o = new Plant();
+        Plant plantA = new Flower();
+        Plant plantB = (Plant) o;  // Line 5
+        Plant plantC = (Flower) o;  // Line 6
+        Flower flower = (Flower) o;  // Line 7
+    }
+}
+
+12- TRICKY QUESTION
+notice:
+rune and compiler and see the result...
+Code fails on the line: tempcount = tt.getClassyName(s) == "abc" ? abcCount++ : defCount++;
+The object variable s is passed to the getClassyName method overloaded with Object.
+The code casts the object to a 'Test' but the object is a 'SubClass' so the cast fails.
+
+class SubClass {
+    public static String classyName = "abc";
+    public static String getClassyName() { return classyName; }
+}
+
+public class Test extends SubClass {
+    public static String classyName = "def";
+    public static String getClassyName() { return classyName; }
+
+    public static void main(String[] args) {
+        Test tt = new Test();
+        Object t = tt;
+        Object s = new SubClass();
+        int abcCount = 0;
+        int defCount = 0;
+
+        int tempcount = ((Test) t).classyName == "abc" ? abcCount++ : defCount++;
+        tempcount = ((SubClass) s).classyName == "abc" ? abcCount++ : defCount++;
+
+        tempcount = tt.getClassyName(t) == "abc" ? abcCount++ : defCount++;
+        tempcount = tt.getClassyName(s) == "abc" ? abcCount++ : defCount++;
+
+        tempcount = tt.getClassyName((Test) t) == "abc" ? abcCount++ : defCount++;
+        tempcount = tt.getClassyName((SubClass) s) == "abc" ? abcCount++ : defCount++;
+
+        System.out.println("abcCount = " + abcCount);
+    }
+
+    public String getClassyName(Object t) {
+        System.out.println("getClassyName(Object t)");
+        Test tt = (Test) t;
+        return tt.getClassyName();
+    }
+
+    public String getClassyName(SubClass sc) {
+        System.out.println("getClassyName(SubClass sc) called");
+        return sc.getClassyName();
+    }
+}

@@ -1,0 +1,319 @@
+############# Handling Exception #################
+
+1- checked exception must be handled and catch during code time.
+2- unchecked exception happened during runtime.
+3- if a client can be expected to recover from the exception, then we use a checked exception
+4- if a client cannot be expected to recover from the exception then we use unchecked exception.
+5- u can use try-catch ot try-finally, the compiler is OKAY with it,
+   but when u try to put some code in try block that require catch then it will show
+   a compiler error if u add only try-finally
+
+       public static void main(String[] args) {
+
+           try {
+               FileReader f = new FileReader("fileName.txt");
+           } catch (Exception e) {
+           }
+
+           try {
+               FileReader f = new FileReader("fileName.txt"); // its a compiler error bcoz FileReader require a catch....
+           } finally {
+
+           }
+       }
+
+6- Throwing exception in catch block...
+
+    public static void main(String[] args) {
+
+        try {
+            FileInputStream f =
+                    new FileInputStream("ApplicationProperties.txt");
+        } catch (IOException ie) {
+            System.out.println("it goes to IOException....");
+            System.out.println("Maybe I want to do something specifically, like" +
+                    " populate data as a default if file was properties file " +
+                    (5 / 0)); // notice here when the exception thrown it did NOT go to Throwable catch,       /************ TRICKY **********/
+        } catch (Throwable t) {
+            System.out.println("it goes to Throwable....");
+            t.printStackTrace(System.out);
+        }
+    }
+
+7- catch exceptions must be done from most specific to less specific .
+   means if u have RuntimeException and CustomRuntimeException,
+   then CustomRuntimeException must be handled first then RuntimeException....
+
+   try {
+
+   } catch (CustomRuntimeException ex) {
+
+   } catch (RuntimeException ex) {
+
+   }
+
+8- if u want to declare multiple catch in same line, then these exceptions must be disjoint....
+
+try {
+
+} catch ( CustomException | RuntimeException e) // OKAY
+{
+}
+
+try {
+
+} catch ( CustomException | RuntimeException | Throwable e) // compiler error
+{
+}
+
+9- throwing exception in finally...
+
+public class Test {
+    public static void main(String[] args) {
+        someMethodThrowsException();
+    }
+
+    public static void someMethodThrowsException() {
+        try {
+            System.out.println("Doing something");
+        } catch (Exception e) {
+            throw new IOException("Testing catch"); // notice here even tho we throw a checked exception we did not throw it in method signature
+            // bcoz we hae finally block that will always be executed and inside finally method we will override the exception and throws runtime exception...
+
+        } finally {
+            throw new RuntimeException("Testing finally");
+        }
+
+    }
+}
+
+10- if exception occurred in static initializer then jvm cannot recover from it, it need to be handled in
+    static initializer itself..
+
+11- if exception thrown from instance initializer and its a checked exception
+    then u can handle it either by wrapping it with try-catch or in constructor...
+
+
+public class Test {
+
+    // Create a subclass of InitializerExceptions
+    class SubClass extends Test {
+
+        SubClass() throws Exception {
+            super();  // Note that call to super() is redundant statement
+        }
+
+    }
+
+    // Create an instance initializer block that throws an unchecked exception
+    {
+        int i = 0;
+        if (i == 0) throw new IOException("Whoops");
+    }
+
+    // Constructor declares IOException in a throws clause
+    Test() throws IOException {
+
+    }
+}
+
+12- TRICKY QUESTION                    /*********** TRICKY *************/
+
+-------------- Test.java source code ------------------
+
+public class Test {
+    public static void main(String[] args) {
+        int i;
+        try {
+            i = 0;
+            System.out.println("i =" + 10 / i++);
+        } catch (RuntimeException e) {
+
+        } finally {
+            System.out.println("i = " + i);
+        }
+    }
+}
+What is the result of compiling and executing the code above?
+
+A. Code compiles, executes and outputs: i = 1
+
+B. Code compiles, executes and outputs: i = 0
+
+C. Code compiles, executes but outputs nothing
+
+D. Code compiles, but exception occurs and nothing is output
+
+E. Code does not compile (correct answer)
+he variable i remains uninitialized when the finally clause is executed.
+If i were initialized to zero when it was declared, A would be correct.
+
+----------------------------
+
+Reminder, Throwable or custom subclasses of Throwable or Exception or any custom subclasses of Exception
+is a checked exception....
+
+in checked exception u must throw an exception in try-catch block..
+but for throwable and Exception its okay to not throw an exception....
+
+   try {
+
+            // u can define empty try catch
+        } catch (Exception e) {
+
+        }
+   try {
+
+            // u can define empty try catch
+        } catch (Throwable e) {
+
+        }
+
+---
+   try {
+
+            // u must throw a checked exception CustomeException here...
+        } catch (CustomException e) {
+
+        }
+
+    try {
+
+             // u must throw a checked exception CustomeException here...
+         } catch (CustomThrowable e) {
+
+         }
+-----------------------------------------
+
+        try {
+            SubClass c = new SubClass();
+            c.methodSuperClass();
+            ce.testError();
+
+        } catch (ArithmeticException e) {
+            e = new ArithmeticException("This works"); // u can assign exception with a new value which is fine!!!
+            throw e;
+        } catch (CustomException | RuntimeException | IOException e) { // we can have multiple exception tryes in same catch
+            // if they are not derivative, note if u replace IOException with Exception then u will hit a complier error
+
+            // e = new IOException("io exception"); //u cant assign a value to catch variables bcoz its implicitly final!,
+            // note: that this only happen in multiple line exception in one line, notice that in ArithmeticException we can reassign value to e
+
+            throw new RuntimeException("So many exceptions, so little time");
+        }
+------------------------------------------------
+
+important example about exception in initilizer:
+
+
+class StaticTest {
+    public static final String currentMessage;
+
+    // Initialized to 0
+    public static int currentVal;
+
+    // Static Initializer
+    // note that jvm wont init class that thrown exception...
+    static {
+        System.out.println("Initializing class StaticTest");
+        try {
+            // We force an error for demonstration purposes
+            // notice that in initiliazer even tho u add try finally but it the caller method still cant initiate the class and notice that
+            // value did not print out in main method..
+            if ((10 / currentVal) > 0) {
+                System.out.println("Whoops");
+            }
+        }
+
+        finally {
+            System.out.println("finally always executed if finally bock did not throw an exception");
+            currentVal=1;
+        }
+        currentMessage = "Inside Static Initializer";
+    }
+}
+
+
+/*
+ * Read me first:
+ * 1- if u have a thrown exception in initilizer block then even tho u try to handle it in caller method
+ * by adding try catch then this wont work and jvm unable to recover in that case..
+ * 2- we tried to add try - finally in initlilizer but still cant recover and it throws exception that not even handled in catch in caller method.
+ *
+ * 3- we try to add try catch finally in initilizer and we notice its fix the issue and the code runs...
+ * */
+public class ExceptionExample2 {
+    public static void main(String[] args) {
+
+        try {
+            System.out.println("Executing main()");
+            // note we notice that even tho u added a try catch to handle exception but it still throwing exception,
+            // bcoz jvm cant recover if exception thrown from initilizer
+            System.out.println("Value="+StaticTest.currentMessage);
+            System.out.println("Value="+StaticTest.currentVal);
+        } catch (Exception e) {
+            System.out.println("main exception");
+            StaticTest.currentVal = 1;
+            e.printStackTrace();
+        }
+    }
+}
+
+----------------------------------------
+
+another example about throwing exception at constructor:
+
+public class ExceptionExample3 {
+
+    {
+        int i = 10;
+        // u can either add try catch exception , or add a constroctor method that handle the throwed exception....
+        if (i == 20)
+            throw new Exception("Exception not handled properly here..");
+    }
+
+    // notice we added throws exception to handle the exception coming from the initlilizer...
+    // note: if u add more constoruts then all of them MUST handle the exception
+    public ExceptionExample3() throws Exception {
+    }
+
+    public ExceptionExample3(String i) throws Exception {
+
+    }
+
+    // notice that in subclass u must also handle exception in the constroctors
+    class ExceptionExample4 extends ExceptionExample3 {
+        public ExceptionExample4() throws Exception {
+        }
+
+//        ExceptionExample4() {
+//            //super(); // we must throw an exception at subclass constroctors as well bcoz parent already throwing an exception
+//            //super(); // ops we still got error, let try to wrap it with try catch
+////            try{
+////                super(); // error again bcoz super must be first statement...
+////            }catch (Exception e){
+////
+////            }
+//        }
+
+    }
+
+
+    public static void main(String[] args) /*throws Exception*/ {
+        /*new ExceptionExample3();*/
+
+        int i;
+        try {
+            i = 0;
+            System.out.println("i =" + 10 / i++);
+        } catch (RuntimeException e) {
+
+        } finally {
+            //System.out.println("i = " + i); // error, must init i
+        }
+
+
+    }
+}
+
+refer also to Exceptions-checked-and-unchecked.png

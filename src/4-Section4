@@ -1,0 +1,868 @@
+############# Using Operators and decision constructs #################
+
+1- prefix and postfix operator:
+  --a evaluate before the expression
+  a-- evaludate after the expression
+
+2- bitwise: turn 0 to 1 or 1 to 0, ~x equals(-x) - 1.
+
+3- UnaryOperator:
+   Java unary operators are the types that need only one operand to perform any operation
+
+       public static void main(String[] args) {
+           System.out.println("----------Test 1 ----------");
+           int a = 0;
+           // If you do no assignment and the operator is not participating
+           // in a more complex expression the following statements are the
+           // same.  the value in variable a gets incremented by 1
+           a = 1;
+           ++a;  // a = a+1
+           System.out.println("a after ++a = " + a);
+           a = 1;
+           a++;  // a = a+1
+           System.out.println("a after a++ = " + a);
+
+           // What happens if we do this?
+           System.out.println("----------Test 2 ----------");
+           a = 1;
+           System.out.println("a after ++a = " + ++a);
+           a = 1;
+           System.out.println("a after a++ = " + a++);
+           System.out.println("And now the value of a is: " + a);
+
+           System.out.println("----------Test 3 ----------");
+           // Let's look at postfix increment in a variable declaration
+           a = 1;
+           int a2 = a++;
+           System.out.println("The value of a is " + a);
+           System.out.println("The value of a2 is " + a2);
+
+           // Let's look at postfix in an expression...
+           a = 1;
+           if (++a == 1) {
+               System.out.println("If Statement, now the value of a is " + a);
+           }
+           System.out.println("----------End 3 ----------");
+
+           System.out.println("----------Test 4 ----------");
+           int b = 5;
+           int loopiterations = 0;
+           while (--b > 0) {  // Use a prefix decrement
+               loopiterations++;
+           }
+           System.out.println("Prefix decrement operator used, loopiterations = " +
+                   loopiterations + ", b = " + b);
+
+           // Reset values, all things equal except the type of increment operator
+           b = 5;
+           loopiterations = 0;
+           while (b-- > 0) {  // Use a postfix decrement
+               loopiterations++;
+           }
+           System.out.println("Postfix decrement operator used, loopiterations = " +
+                   loopiterations + ", b = " + b);
+
+       }
+
+3- bitwise operator: flips bits value of the variable.
+
+  public static void main(String[] args) {
+        // unary Minus
+        int a = 1, b = -a;
+
+        // Note that the value of actual operand a does not change
+        System.out.println("a = " + a + "; b = " + b);
+        a = -1;
+        b = -a;
+        System.out.println("a = " + a + "; b = " + b);
+
+        //  Unary Plus
+        a = 1;
+        b = +a;  // Not to mistaken for b+=a;
+        System.out.println("a = " + a + "; b = " + b);
+        a = -1;
+        b = +a;
+        System.out.println("a = " + a + "; b = " + b);
+
+
+        // Bitwise Complement Operator  ~a
+        // when value is x then ~x = (-x)-1;
+        int bin1 = 0b00000000_00000000_00000000_00000000;
+        int bin2 = ~bin1;
+
+        System.out.println("bin1 = " + bin1 +
+                " (" + Integer.toBinaryString(bin1) + "), " +
+                "bin2 = " + bin2 +
+                " (" + Integer.toBinaryString(bin2) + ")");
+
+
+        // Logical Complement Operator  !a
+        boolean myBoolean = false;
+        boolean newBoolean = !myBoolean;
+        System.out.println("myBoolean = " + myBoolean +
+                ", the opposite is = " + newBoolean);
+    }
+
+---------------------------------------------------------------------------------
+############## binary operators ###############
+
+will be grouped fro left to right.
+
+1- for unary operator: if the type of operand is smaller than an int, the operand wil automatically be promoted to an int.
+2- for binary operator, both operands are promoted to int if they are smaller than an int, but
+   if any of the operands is larger than an int, then its promoted to the larger type.
+
+1- example 1 about binary operator:
+
+    public static void main(String[] args) {
+        int a = 1;
+        int b = 2;
+        int c = 3;
+        int d = 4;
+        int e = 5;
+        int f = 6;
+
+        // Multiplicative (* / %) operations are evaluated first
+        // Before Additive operators (+ -)
+        // and evaluated left to right.
+
+        // Could also be written:  a + (e * b) - (f / c) % b;
+        // 1 + (5*2) - (6/3)%2
+        // 1 + 10 - 0 = 11
+        int result = a + e * b - f / c % b;
+        System.out.println("result for (a + e * b - f / c % b) = "
+                + result);
+    }
+
+2- example 2 about % :
+
+    public static void main(String[] args) {
+
+        // Modulus operator (remainder operator) returns remainder
+        // of operation. Result is easier to understand when the divisor
+        // is greater than dividend
+        System.out.println("result for (11 % 10) = " + (11 % 10));
+
+        System.out.println("result for (10 % 11) = " + (10 % 11));
+
+        // Modulus with zero divisor using integer operands
+        try {
+            System.out.println("Modulus with zero divisor (10 % 0) = "
+                    + (10 % 0));
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+        }
+
+        //Modulus with zero divisor using  double operands
+        try {
+            System.out.println("Modulus with zero divisor (10.0 % 0.0) = "
+                    + (10.0 % 0.0));     // note that we divided here on 0.0 NOT on 0
+        } catch (Exception ex) {
+            ex.printStackTrace(System.out);
+        }
+
+    }
+
+3- shift operators:
+
+    public static void main(String[] args) {
+        System.out.println("--- Shift Operators ---");
+        // left shift (<<)
+        // bit pattern shifted left by 2 places (right operand = 2)
+        // 0b0000_0001 becomes 0b0000_0100
+        System.out.println("result of left shift (00000001 << 2 ) = "
+                + String.format("%8s",Integer.toBinaryString(0b00000001 << 2)).
+                replace(' ', '0'));
+
+
+        // right shift (>>)
+        // bit pattern shifted left by 3 places (right operand = 3)
+        // 0b10001000 becomes 0b00010001
+        System.out.println("result of right shift (10001000 >> 3 ) = "
+                + String.format("%8s",Integer.toBinaryString(0b10001000 >> 3)).
+                replace(' ', '0'));
+
+
+        // >>>  right shift unsigned
+        System.out.println("result of unsigned right shift (" +
+                "10000010_00000010_00000010_00000010 >>> 1 ) = "
+                + String.format("%32s",Integer.toBinaryString(
+                        0b10000010_00000010_00000010_00000010 >>> 1)).
+                replace(' ', '0'));
+
+        //  Compare right shift unsigned to right shift results
+        System.out.println("result of signed right shift   (" +
+                "10000010_00000010_00000010_00000010 >>  1 ) = "
+                + String.format("%32s",Integer.toBinaryString(
+                        0b10000010_00000010_00000010_00000010 >> 1)).
+                replace(' ', '0'));
+
+    }
+
+4- operand : | , || , & , &&
+
+    public static void main(String[] args) {
+        int a = 1;
+        int b = 2;
+        int e = 5;
+        int f = 6;
+
+        // Relationship operators <, <=
+        // | - logical or
+        // || - conditional logical or
+        System.out.println("\nResults using relationship operators" +
+                " and logical or operators (| ||) ");
+        e = 0;
+        f = 0;
+        if ((e++ <= f) | (++e < f)) {
+            System.out.println("Evaluation [(e++ <= f) | (++e < f)] met");
+        }
+        System.out.println("Logical | (OR) will evaluate both expressions: e = "
+                + e + ", and f = " + f);
+
+        e = 0;
+        f = 0;
+        if ((e++ <= f) || (++e < f)) {
+            System.out.println("Evaluation [(e++ <= f) || (++e < f)] met");
+        }
+        System.out.println("Conditional Logical || evaluates only first " +
+                "expression if it evaluates to true: e = "
+                + e + ", and f = " + f);
+
+        e = 0;
+        f = 0;
+        if ((e++ < f) || (++e <= f)) {
+            System.out.println("Evaluation [(e++ <= f) || (++e < f)] met");
+        }
+        System.out.println("Conditional Logical || (OR) will evaluate" +
+                " both expressions ONLY if first expression is false : e = "
+                + e + ", and f = " + f);
+
+        System.out.println("\nResults using relationship operators" +
+                " and logical or operators (& &&) ");
+
+        a = 0;
+        b = 10;
+        if ((++a > b) & (++a >= b)) {
+            System.out.println("Evaluation [(++a > b) & (++a >= b)] met");
+        }
+
+        System.out.println("Logical & (AND) will evaluate both expressions: a = "
+                + a + ", and b = " + b);
+
+        a = 0;
+        b = 10;
+        if ((++a > b) && (++a >= b)) {
+            System.out.println("Evaluation [(++a > b) && (++a >= b)] met");
+        }
+
+        System.out.println("Conditional && (AND) will evaluate only first " +
+                "expression if it evaluates to false: a = "
+                + a + ", and b = " + b);
+
+        a = 0;
+        b = 0;
+        if ((++a > b) && (++a >= b)) {
+            System.out.println("Evaluation [(++a > b) && (++a >= b)] met");
+        }
+
+        System.out.println("Conditional && (AND) will evaluate both " +
+                "expressions if first evaluates to true: a = "
+                + a + ", and b = " + b);
+
+    }
+
+
+5- XOR bit is 0 if both operand bits are the same value, otherwise its 1.
+
+6- assignment operator
+   note: that the variables NOT promoted .
+
+    public static void main(String[] args) {
+        // Assignment Operator
+        byte b1 = 2;
+        byte b2 = 2;
+        byte b3 = 5;
+
+        // Multiplicative Assignments, note that variables NOT promoted,
+                                                          /************** TRICKY ***************/
+        b1 *= 2;
+        System.out.println("b1 (after b1 *= 2 ) = " + b1);
+        b2 /= 2;
+        System.out.println("b2 (after b2 /= 2) = " + b2);
+        b3 %= 2;
+        System.out.println("b3 (after b3 %= 2) = " + b3);
+
+        // Additive Assignments, note that variables NOT promoted
+        b1 = 2;
+        b2 = 2;
+        b1 += 2;
+        System.out.println("b1 (after b1 += 2) = " + b1);
+        b2 -= 2;
+        System.out.println("b2 (after b2 -= 2) = " + b2);
+
+    }
+
+7- for binary operator the variables will be promoted to int,
+   note :
+    byte b=1;
+    b+=1; // okay
+    b = b+1; // compiler error (binary operator)
+
+        public static void main(String[] args) {
+            // This code results in an overflow
+            byte testByte = 127;
+            testByte += 1;
+            System.out.println("testByte = " + testByte);
+
+            // This code results in a compiler error
+    //        byte testByte2 = 127;
+    //        testByte2 = testByte2 + 1;
+    //        System.out.println("testByte2 = " + testByte2);
+        }
+
+8- ternary operator format :
+   operand1 ? operand2 : operand3
+   only one operand will be evaluated (operand2 or operand3)
+
+    public static void main(String[] args) {
+        boolean b = true, hasArguments = true;
+        // Expressions only evaluated in the one of the cases
+        int x = 0;
+        int y = 0;
+        int newResult = (b && (hasArguments && args[0].equals("10"))) ? x++ : y++;
+        System.out.println("Result of Example 4 = " +
+                newResult + ", x = " + x + ", y = " + y);
+    }
+
+9- promotion:
+   if u put sign in front of (byte,short,char) it will be promoted to int.
+
+       public static void main(String[] args) {
+          byte b = 1;
+          var b1 = +b; // b1 is int
+
+           short s = 1;
+           var s1 = +s; // s1 is int
+
+           char c = 1;
+           var c1 = +c; // c1 is int
+       }
+
+
+// short + byte will be also promoted to int...
+
+    public static void main(String[] args) {
+        byte b = 1;
+
+        short s = 1;
+
+        // s = b + s; // compiler error bcoz short + byte will be promoted to int
+        var result = b + s; // result is int
+    }
+
+// long + 1.0 the result is double
+
+    public static void main(String[] args) {
+        long l = 10;
+        var result = l + 1.0; // result is double
+        System.out.println(result);
+    }
+
+10- some tricky questions:
+   * result = --number - number--; // result is always zero
+     lets say number=10;
+     9-(number--) = 9-9 = 0
+
+   * result = number-- - --number
+     lets say number = 10;
+     10 - --(9) = 10 - 8 = 2
+
+     public static void main(String[] args) {
+             int number = 10;
+             int result = number-- - --number;
+             System.out.println(result);
+         }
+
+11-  super tricky :                                   /************** TRICKY ***************/
+
+// important note:
+it will first evaluate ++ and -- then only proceed with the evaludation with is first multiply then subtract...
+
+
+    public static void main(String[] args) {
+        int number = 10;
+        int result = number-- - number++ * --number;
+        //            10      -  9 * --number
+        //            10      -  9 * --(10)
+        //            10      -  9 * 9
+        //            10      -  81 = -71
+        System.out.println(result);
+    }
+
+// another tricky question:
+    public static void main(String[] args) {
+        int number = 10;
+        boolean result = (number--) == (number += 1);
+        //            10       == 9+1
+        //            10 == 10 == true
+        System.out.println(result);
+    }
+
+// another tricky question
+                                                   /************** TRICKY ***************/
+    public static void main(String[] args) {
+        int number = 10;
+        number = number--;
+
+        System.out.println("number = "+ number); // value remain unchanged...
+    }
+
+
+12-                                 /*********** TRICKY ***************/
+
+    public static void main(String[] args) {
+        short a = 10;
+        short b = 5;
+        char c = 3;
+
+        a *= b -= c--;  // Line 1
+        Object d = a % 3;  // Line 2
+
+        String dtype = "short";
+        if (d instanceof Integer) dtype = "int";  // Line 3
+        else if (d instanceof Character) dtype = "char";
+        else if (d instanceof Long) dtype = "long";
+        else if (d instanceof Float) dtype = "float";
+        else if (d instanceof Double) dtype = "double";
+
+        System.out.println(a);
+        System.out.println(dtype + " " + d);
+    }
+
+
+13 -
+                                         /*********** TRICKY ***************/
+public class Test {
+    public static void main(String[] args) {
+        int i = 0;
+        int j = 5;
+        int k = 10;
+
+        int loopIterations = 0;
+
+        while ((i++ < j) || (j < --k)) {
+
+            loopIterations++;
+        }
+        System.out.println(loopIterations);
+
+    }
+}
+
+---------------------------------------------------------------------------------
+############## if else decisions ###############
+
+if (condition) // evaluated from left to right....
+
+1- 'then' and 'elseif' are not valid in java..
+
+2- u can have empty statement after else of if if they followed with ;
+
+3- very common mistake                      /************* TRICKY ***************/
+
+    public static void main(String[] args) {
+        boolean flag = false;
+
+        if (flag = true) { // the assignment itself is true...
+            System.out.println("flag is true");
+        } else {
+            System.out.println("flag is false");
+        }
+
+    }
+
+
+4- tricky question:                                       /************* TRICKY ***************/
+
+    public static void main(String[] args) {
+        //The following code tests precedence/assignment inside an if/else statement
+        boolean a = false;
+        boolean b = false;
+        boolean c = false;
+
+        if ((a = true) || (b = true) && (c = true)) ;
+        System.out.println(a + " " + b + " " + c);
+
+    }
+
+5- tricky question:                        /************* TRICKY ***************/
+
+    public static void main(String[] args) {
+        //The following code tests precedence/assignment inside an if/else statement
+        boolean a = false;
+        boolean b = false;
+        boolean c = false;
+
+        if ((a = true) && (b = true) || (c = true)) ;
+        System.out.println(a + " " + b + " " + c);
+
+    }
+
+
+---------------------------------------------------------------------------------
+############## switch statement ###############
+
+1- it only works for byte, char, and int primitive types and their wrapper class
+2- it also works with enum , string.
+3- u can only have one default case label in block.
+4- default case does not have to be the last one.
+5- break; is optional, but if u did not add it it will fall-through all cases.
+
+
+public class Test {
+    static final String TEST = "test";
+
+    public static void main(String[] args) {
+        // Example of a switch statement with expression based on
+        // compile time constants in the case label
+        String str = "";
+        String test = "12";
+        switch (test) {
+            case ("1"):
+                System.out.println("Output is 1");
+                break;
+            case ("1" + "2"):  // concatenation operator in expression.
+                // its valid only if compiler can evaluate them at compile time...
+                System.out.println("Output is 12");
+                break;
+//            case ("1" + str):  // this is not valid bcoz compiler cant evaluate str during compile time bcoz its not a constant...
+//                System.out.println("Output is 12");
+//                break;
+//
+            case ("2"+TEST): /// its okay bcoz TEST is a constant....
+                System.out.println("Output is 2");
+                break;
+            case ("2"):
+                System.out.println("Output is 2");
+                break;
+            default:
+                System.out.println("Output is default");
+        }
+    }
+}
+
+6- example of using switch with enum:
+
+
+public class Test {
+    // Set up an enumeration of week days
+    enum Day {
+        SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+        THURSDAY, FRIDAY, SATURDAY
+    }
+
+    public static void main(String[] args) {
+
+        // Example of a Switch statement using an enum.
+        // We'll loop through the weekdays in the enum ...
+        for (Day d : Day.values()) {
+            switch (d) {
+                case MONDAY:
+                case TUESDAY:
+                case WEDNESDAY:
+                case THURSDAY:
+                    System.out.println(d + ": Workday");
+                    break;
+
+                case FRIDAY:
+                    System.out.println(d + ": TGIF");
+                    break;
+
+                case SATURDAY:
+                case SUNDAY:
+                    System.out.println(d + ": Weekends!");
+                    break;
+
+                default:
+                    System.out.println("Midweek days are so-so.");
+                    break;
+            }
+        }
+    }
+
+}
+
+7- cant use long, double and float in switch.
+
+8- if u see a switch statement on exam using one of these type (float, double, long) without
+   specific cast, its a compiler error.
+
+
+9- switch :out of ordinary
+
+
+public class Test {
+    public static void main(String[] args) {
+        byte[] bytes = {100, 103, 104, 107, 126};
+        String caseAssignedValue = "";
+        for (var i : bytes) {  // Using LVTI here
+            switch (i*10) {  // Use an Expression, notice here that i got promoted to int (i*10)
+                // it u make it i only then its compiler error bcoz 1000 out of the range...
+                // u can also promot it by add + in front of i : +i
+
+                case 1000:
+                case 1030:
+                case 1040:
+                case 1070:
+                    caseAssignedValue = "Less than 1100";
+                    break;
+                case 1260:
+                    caseAssignedValue = "Equal to 1260";
+                    break;
+            }
+            System.out.println("Done processing " + i +
+                    ", caseAssignedValue = " + caseAssignedValue);
+        }
+    }
+
+}
+
+10-  note:                         /************ TRICKY ************/
+    if u see a continue; in switch it does not mean anything, this continue refers to for loop.
+    not to the switch
+    // run this below code....
+
+    public class Test {
+        public static void main(String[] args) {
+            byte[] bytes = {100, 103, 104, 107, 126};
+            String caseAssignedValue = "";
+            for (var i : bytes) {  // Using LVTI here
+                switch (i) {
+                    case 100:
+                    case 103:
+                    case 104:
+                        continue;
+                    case 107:
+                        caseAssignedValue = "Less than 1100";
+                        break;
+                    case 126:
+                        caseAssignedValue = "Equal to 1260";
+                        break;
+                }
+                System.out.println("Done processing " + i +
+                        ", caseAssignedValue = " + caseAssignedValue);
+            }
+        }
+
+    }
+
+
+11- if u want to break loop inside a switch then we should use a label:
+
+public class Test {
+    public static void main(String[] args) {
+        byte[] bytes = {100, 103, 104, 107, 126};
+        String caseAssignedValue = "";
+
+        // Create a label to use in switch statement
+        start_for:
+        for (var i : bytes) {   // Using LVTI here
+            switch (i) {
+                case 100:
+                case 103:
+                case 104:
+                    // This is case block break
+                    break;
+                case 107:
+                    caseAssignedValue = "Less than 110";
+                    // This is a for loop break with label
+                    break start_for;
+                case 126:
+                    caseAssignedValue = "Equal to 126";
+                    break;
+            }
+            System.out.println("Done processing " + i +
+                    ", caseAssignedValue = " + caseAssignedValue);
+        }
+    }
+
+}
+
+12- u cant add statements after break; as it will be unreachable...
+
+public class Test {
+    public static void main(String[] args) {
+        byte[] bytes = {100, 103, 104, 107, 126};
+        String caseAssignedValue = "";
+
+        // Create a label to use in switch statement
+        start_for:
+        for (var i : bytes) {   // Using LVTI here
+            switch (i) {
+                case 100:
+                case 103:
+                case 104:
+                    // This is case block break
+                    break;
+                case 107:
+                    caseAssignedValue = "Less than 110";
+                    // This is a for loop break with label
+                    System.out.println("hello"); // okay
+                    break start_for;
+                    //System.out.println("hello");// unreachble statement...
+                case 126:
+                    caseAssignedValue = "Equal to 126";
+                    break;
+            }
+            System.out.println("Done processing " + i +
+                    ", caseAssignedValue = " + caseAssignedValue);
+        }
+    }
+
+}
+
+13 - when u see switch in exam follow the following guide:
+
+- examine its location if its inside a loop.
+- dont let the breaks and continue statement mislead u.
+- examine switch expression, can u determine the type.
+- does the type match the case label.
+- is the type valid?
+- double, float, long are not valid for switch.
+- if the switch expression is a local variable it MUST be initialized... /***************** TRICKY *****************/
+
+    public static void main(String[] args) {
+        int i;
+        switch (i) { // i not initilized and its a compiler error...
+            case 100:
+            case 103:
+            case 104:
+                // This is case block break
+                break;
+            case 107:
+                System.out.println("107");
+            case 126:
+                break;
+            default:
+                System.out.println("default value");
+
+        }
+    }
+
+- if case block do not have break then the code fall through all cases.
+- default case does not have to be last.
+- default case is optional.
+
+
+---------------------------------------------------------------------------------
+############## for loop ###############
+
+for (initialization; termination; increment) {
+
+}
+
+// initialization executed only once.
+// initialization is optional.
+// termination evaluated every iteration
+// termination is optional (the default is true).
+// increment evaluated after first iteration.
+// increment is optional.
+
+
+2- this is infinite loop:
+   for(; ;) ;
+
+3- u cant reference a label with continue, break .
+
+4- outer loop cant reference inner loops lable, but an inner loop can reference the outer loop label.
+
+public class Test {
+
+    public static void main(String[] args) {
+
+        // You cannot reference a label inside a for loop that is not
+        // associated to the for loop, unless the for loop is nested
+        int i = 0,
+                j = 0,
+                jmax = 4;
+        OUTER_LABEL: for (i = 0; i <= 4; i++) {
+            System.out.println(" i = " + i + " FIRST STATEMENT");
+            if (i == 0) {
+                System.out.println("\t i = " + i + ", CONTINUE OUTER_LABEL");
+                continue OUTER_LABEL;
+            }
+
+            INNER_LABEL: for (j = 0; j < 3; j++) {
+                System.out.println("\t\tj = " + j + " FIRST ");
+                if (i == 1 && j == 0) {
+                    System.out.println("\t\t\tj = " + j + " CONTINUE INNER_LABEL");
+                    continue INNER_LABEL;
+                }
+                if (i == 2 && j == 1) {
+                    System.out.println("\t\t\tj = " + j + " BREAK INNER_LABEL");
+                    // Here, we are breaking out of the inner loop
+                    break INNER_LABEL;
+                }
+                if (i == 3 && j == 2) {
+                    System.out.println("\t\t\tj = " + j + " BREAK OUTER LABEL");
+                    // Here we are breaking out of both loops
+                    break OUTER_LABEL;
+                }
+                System.out.println("\t\tj = " + j + " LAST ");
+
+            }
+            System.out.println(" i = " + i + " LAST STATEMENT");
+        }
+        System.out.println("OUTSIDE OF LOOPS: i = " + i + ", j = " + j);
+
+    }
+
+}
+
+5- throwing exception in for initialization :
+
+public class Test {
+
+    // Create a method which may throw an exception and returns an int
+    public static int interruptIt(int i) throws Exception {
+        System.out.println("interruptIt: i = " + i);
+        if (i < 10) throw new Exception("Break it up");
+        return i;
+    }
+
+    public static void main(String[] args) {
+
+        int i = 0;
+        // First, let's throw an exception in the initialization block...
+        try {
+            System.out.println("------- Executing For Loop A -------");
+            // termination section of for loop declaration has prefix increment
+            // increment section of for loop declaration uses postfix increment
+            for (interruptIt(i); ++i < 10; i++) { // try to move interruptIt(i) to init, termination, increment and see the result for each
+                System.out.println("A forloop: i = " + i);
+            }
+        } catch (Exception e) {
+            System.out.println(e + ": i = " + i);
+        }
+    }
+
+}
+
+6- tricky question:
+  this will number infinitely bcoz byte will overflow...
+
+public class Test {
+    static int testVariable;
+
+    public static void main(String[] args) {
+        byte i, j;
+        for (i = 100, j = 0; i <= 300; i += 90, j++) { // Line 1
+            testVariable = i % 50;   //  Line 2
+            System.out.print(testVariable + " "); // Line 3
+        }
+        System.out.println(j);
+    }
+
+}
+

@@ -1,0 +1,68 @@
+############# Handling Exception #################
+
+1- checked exception must be handled and catch during code time.
+2- unchecked exception happened during runtime.
+3- if a client can be expected to recover from the exception, then we use a checked exception
+4- if a client cannot be expected to recover from the exception then we use unchecked exception.
+5- u can use try-catch ot try-finally, the compiler is OKAY with it,
+   but when u try to put some code in try block that require catch then it will show
+   a compiler error if u add only try-finally
+
+       public static void main(String[] args) {
+
+           try {
+               FileReader f = new FileReader("fileName.txt");
+           } catch (Exception e) {
+           }
+
+           try {
+               FileReader f = new FileReader("fileName.txt"); // its a compiler error bcoz FileReader require a catch....
+           } finally {
+
+           }
+       }
+
+6- Throwing exception in catch block...
+
+    public static void main(String[] args) {
+
+        try {
+            FileInputStream f =
+                    new FileInputStream("ApplicationProperties.txt");
+        } catch (IOException ie) {
+            System.out.println("it goes to IOException....");
+            System.out.println("Maybe I want to do something specifically, like" +
+                    " populate data as a default if file was properties file " +
+                    (5 / 0)); // notice here when the exception thrown it did NOT go to Throwable catch,       /************ TRICKY **********/
+        } catch (Throwable t) {
+            System.out.println("it goes to Throwable....");
+            t.printStackTrace(System.out);
+        }
+    }
+
+7- catch exceptions must be done from most specific to less specific .
+   means if u have RuntimeException and CustomRuntimeException,
+   then CustomRuntimeException must be handled first then RuntimeException....
+
+   try {
+
+   } catch (CustomRuntimeException ex) {
+
+   } catch (RuntimeException ex) {
+
+   }
+
+8- if u want to declare multiple catch in same line, then these exceptions must be disjoint....
+
+try {
+
+} catch ( CustomException | RuntimeException e) // OKAY
+{
+}
+
+try {
+
+} catch ( CustomException | RuntimeException | Throwable e) // compiler error
+{
+}
+

@@ -1,0 +1,1388 @@
+############# working with java primitive types and Strings #################
+
+there are two types of data:
+1- primitive data type (stored in memory and does not have location reference). faster for performance
+2- reference data type (it does have reference in memory).
+
+primitive data types:
+byte -> char -> short -> int -> long -> float -> double -> boolean
+
+---------------------------------------------------------------------------------
+####### invalid primitive declaration ###############
+1- int myInt, short mySecond; // compiler error, multiple types is not allowed in same line compound declaration
+
+boolean status = 1; // compiler error, boolean accept only true, false
+byte b = 0b_00001; // cant add _ directly after 0b
+char c = 0x_00001; // cant add _ directly after 0x
+float f = _1000.0000 // cant start with _
+double d = 1.0000_e10; // cant add _ before e
+
+
+########## suffix for long, double, float
+1- we can add suffix to long, double , float
+long l = 10l; // 10, 10L also can
+float f = 10f; // 10, 10F also can
+double d = 10d; // 10, 10D also can
+
+
+######### can add binary , octal, hexa values to numeric types (byte, short, int...)
+1-
+        byte b = 0b1111;
+        short s = 0177; // octal
+        int i = 0x007F; // hexa
+
+        System.out.println(b);// it will print 15
+        System.out.println(s);// it will print 127
+        System.out.println(i);//it will print 127
+        /**** notice : the print output will always print value as decimal ***/
+
+
+2- you can also assign char to numeric type, and it will print the decimal values for it..
+
+        byte b = 'a';
+        char c = 'a';
+        double d = 'a';
+
+        System.out.println(b); // 97
+        System.out.println(c); // a
+        System.out.println(d); // 97.0
+
+        /**** notice : the print output will always print value as decimal, for char it will print value as char.... ***/
+
+3- u can also add unicode values to primitive type
+
+        byte b = '\u006F';
+        char c = '\u006F';
+        double d = '\u006F';
+
+        System.out.println(b); // 111
+        System.out.println(c); // o
+        System.out.println(d); // 111.0
+
+        /**** notice : the print output will always print value as decimal, for char it will print value as char.... ***/
+
+
+## important note for primitive type:
+u cant set any primitive variable to null....
+
+    public static void main(String... args) {
+        byte b = null; // compiler error
+        char c = null; // compiler error
+        double d = null;// compiler error
+        int i = null;// compiler error
+
+        testNull(null); // compiler error
+    }
+
+    static void testNull(long i){
+
+    }
+
+
+--------------------------------------------------------------------------
+########## Local variable Initialization ###########
+
+1- local variables must be initialized first before use them.
+2- instance variables and static variables has a default value.
+3- default value for byte, short, int, float, double, char is : 0
+   boolean : false
+   String : null
+
+   notice for double, float default value is : 0.0
+
+4- for local variables u must init variables before use them:
+
+   public static void main(String... args) {
+       int i;
+
+       System.out.println(i); // compiler error, i not being initialized..
+    }
+
+5- its okay to have uninitialized local variables as long as u not use them.
+
+6- partial initialization is when u init local variable in if statement but without else
+   or at switch statement but not in default statement
+   or in while loop,
+   for do while loop its okay.
+
+   // if statement
+   public static void main(String... args) {
+       int i;
+       boolean status=true;
+       if (status)
+           i=10;
+        System.out.println(i); // compiler error bcoz its partiality initialized
+    }
+
+    // this one okay and satisfy compiler bcoz if condition always true.
+    public static void main(String... args) {
+            int i;
+            if (true)
+                i = 10;
+            System.out.println(i);
+    }
+
+
+   // switch case
+    public static void main(String... args) {
+        int i;
+        int state = 10;
+
+        switch (state) { // bracket important here for switch...
+            case 0:
+            case 1:
+            case 2:
+                i = 1;
+                break;
+            case 3:
+                i = 2;
+//            default:   //if we comment default then it's partly init
+//                i = -1;
+//
+        }
+
+        System.out.println(i); // compiler error , i not fully been initialized.
+    }
+
+    // do-while loop
+    public static void main(String... args) {
+        int s, t = 0;
+
+        do {
+            s = t++;
+        } while (t < 1);
+
+        System.out.println(s); // here its okay bcoz do-while loop executed once at least....
+    }
+
+    // while loop
+    public static void main(String... args) {
+            int s, t = 0;
+
+            while (t < 1) {
+                s = t++;
+                break;
+            }
+
+            System.out.println(s);// compiler error
+        }
+
+#### key take note: in the exam if u see local variable not being initialized then check
+                    closely if this variable being used then its a compiler error.
+
+
+--------------------------------------------------------------------------
+############## Narrowing and Widening ###############
+
+Narrowing : when you assign larger primitive type into smaller one.
+Widening: when u put some small primitive type into larger variable.
+
+1- every numeric value that does not contain a decimal point is a 32 bit int
+   means 10 is int by default, int i = 10; // 10 here is int by default....
+
+2- every numeric literal with a decimal is a double
+   means 10.1 is double not float
+   double d = 10.1;
+   float f = 10.1; // compiler error, bcoz u r trying to put double (10.1) into float
+                   // so u need to do casting here, or u can put 10.1f;
+
+3- note that byte range -128 to 127.
+
+4- Narrowing (need casting to get rid of compiler error)
+byte b = 127; // its okay bcoz compiler will narrow it to byte and 127 still in byte range.
+char c = 65535; // still okay bcoz still in char range
+short s = 32767; // still okay bcoz still in char range
+
+byte b = 128; // compiler error, bcoz its out of range
+char c = 65536; // compiler error, bcoz its out of range
+short s = 32768; // compiler error, bcoz its out of range
+
+float f = 0.0; // compiler error bcoz 0.0 is double, any decimal numeric is double by default.
+byte b = 0.0; // compiler error bcoz 0.0 is double, any decimal numeric is double by default.
+char i = 0.0; // compiler error bcoz 0.0 is double, any decimal numeric is double by default.
+.. etc
+
+
+int myIntVariable = 1;
+byte b = myIntVariable; // compiler error, bcoz the compiler does not know if u put 1 in myIntVariable
+
+5- Widening (does not need any casting as it will assign small value into larger one)
+
+double myDouble;
+float myFloat;
+long myLong;
+int myLong;
+short myShort;
+byte myByte;
+
+myDouble = myFloat = myLong = myInt = myShort = myByte;
+
+## For char things a bit different:  /******************* TRICKY *************/
+    public static void main(String... args) {
+
+        char myChar = 'a';
+        byte myByte = 1;
+        short myShort = 1;
+
+        myChar = 'a'; // this is okay
+        myChar = myByte; // compiler error, this is include both widening and narrowing,
+                         // first byte widened to int, then the result is converted to a char
+                         // by narrowing it.
+
+        myShort = myChar; // compiler error,although short and char same size, but char
+                          // is unsigned so the conversion not allowed
+        myChar = myShort; // compiler error
+    }
+
+
+--------------------------------------------------------------------------
+############## Casting ###############
+
+1- casting can be to larger size (widening) or smaller size (narrowing).
+
+2- the problem with casting in primitive types is that if your value
+   does not fall into the valid value range, your data may underflow
+   or overflow...
+   note:
+   double and float do not overflow, since they are approximated.
+
+   public static void main(String... args) {
+        short s;
+        int i = Short.MAX_VALUE + 1;
+
+        s = (short) i; // need casting bcoz its narrowing
+
+        System.out.println(s); // -32768 overflow value....
+
+    }
+
+3- truncating results is when u cast float, double into int.
+
+    public static void main(String... args) {
+        float f = 123.432f;
+        int i = (int) f;
+        System.out.println(i); //123
+    }
+
+--------------------------------------------------------------------------
+############## Declaring and init variables: out of ordinary ###############
+
+1- Unicode char representation
+   char data type fixed size is 16 bit by default.
+   unicode standard has since been changed to allow char whose representation required more
+   than 16 bits
+
+--------------------------------------------------------------------------
+############## Scopes ###############
+
+1- if u have two variables same name in constructor and instance field then u should use this to different between them
+
+   class Test {
+     int i; // instance field
+
+     public Test (int i) {
+        this.i = i; // correct assign
+        i=i; // not correct
+     }
+
+   }
+
+
+2- cant use variable if its out their scope
+
+boolean status = true;
+if (status) {
+   String name="alammar";
+}
+
+System.out.println(name); // compiler error, unknown variable, bcoz its outside the scope
+
+
+3- be aware of clashing between method signature variable name and local variable name,
+
+int age; // instance variable
+
+public String getDecade(int age) {
+   String name="alammar";
+   int age = 27; // compiler error, as age already declared at method signature
+   int g = this.age; // its okay to use this.age bcoz we use fully qualified this.age to reference the age...
+}
+
+
+4- be aware when u declare variable in for loop that already been defined before,
+
+int j=0;
+
+for (int i=0, j=1; i<10; i++, j++) { // compiler error at j=1 as its already been defined before at : int j=0;
+                                     // we can fix the compiler error by making this change: int i = j = 0
+   ///
+}
+
+4- u can add same variable name in local method in inner class or nested class bcoz inner class and nested class has implied qualifier reference to the outer
+   class object.
+
+
+public class Test {
+    int i = 20;
+
+    public static void main(String... args) {
+        // local variable i declared and initialized
+        int i = 10;
+        class locallyDefinedClass {
+            {
+                // i from method scope still visible in nested local class
+                System.out.println("value of i BEFORE LOOP  " + i);
+                System.out.println("---------------");
+
+                // int i=1; // if u define i here then it will show compiler error at for loop. bcoz same name.
+
+                // Because this for loop is within a local class,this is valid
+                for (int i = 0; i < 5; i++) {
+                    System.out.println("value of i during FIRST loop " + i);
+                }
+                System.out.println("---------------");
+
+                // the local variable i from previous loop has gone out of scope
+                // so it is ok to create another local variable in the second loop
+                // declaration of the same name.
+                for (int i = 5; i > 0; i--) {
+                    System.out.println("value of i during SECOND loop " + i);
+                }
+                System.out.println("---------------");
+
+                //  assign local loop variable j to local variable i from the
+                // surrounding method of the nested class,
+                for (int j = i; j < 15; j++) {
+                    System.out.println("value of i,j during THIRD loop " + i + "," + j);
+                }
+                System.out.println("value of i AFTER LOOP  " + i);
+
+                //i = 20; // compiler error, u cant assign value to local variable from withing a nested class or local class...
+                new Test().i = 20;// this is okay bcoz its instance variable
+            }
+        }
+        System.out.println("value of i before local class instantiated " + i);
+        new locallyDefinedClass();
+        System.out.println("value of i after local class instantiated " + i);
+    }
+
+}
+
+--------------------------------------------------------------------------
+############## Local Variable Type Inference (var) introduced in java 11 ###############
+
+1- its a shortcut to reduce verbosity of code.
+2- var its not a type, its a short hand.
+3- only can be used inside method for local variables.
+4- valid var declarations:
+
+public class Test {
+    int i = 20;
+
+    public static void main(String... args) {
+        // i is inferred to be an int, since it's assigned a literal int
+        var i = 1;
+
+        // An array can be assigned to an LVTI variable
+        var aVarArray = new int[3];
+
+        // Valid to assign a method return value to an LVTI variable
+        var methodVal = new Test().i;
+
+        // OK to assign a null object to LVTI variable but not literal null
+        Object nullObject = null;
+        var var = nullObject; // if u change to null literal then its compiler error
+    }
+}
+
+4- invalid var declarations:
+
+    public static void main(String... args) {
+        // Invalid var declarations:
+
+//        // cannot use var declaration in a compound statement
+//        var j = 0, k = 0;
+//
+//        // again, cannot use var declaration in a compound statement
+//        var m, n = 0;
+//
+//        // Cannot declare a var variable without also initializing it
+//        var someObject;
+//
+//        // Cannot assign null to var variable, type cannot be inferred
+//        var newvar = null;
+//
+//        // Cannot use array initializer in var declaration/initialization
+//        var myArray = {"A", "B"};
+//
+//        // Cannot have an array of var
+//        var[]newarray = new int[2];
+    }
+
+5- cant add instance variables as var
+
+class Test {
+  static var classVariable = 10; // compiler error
+  var instanceVariable = 20; // compiler error
+
+  // compiler error, cant use var in return
+  public var returnThis () {
+
+  }
+
+  // compiler error, cant use var in method args
+  public String returnThat (var arg) {
+
+  }
+}
+
+
+--------------------------------------------------------------------------
+############## Local Variable Type Inference (var) out of ordinary ###############
+
+1- we can use var in for loop:
+
+for (var i=0; i<10; i++) {
+ ///
+}
+
+2- when we add a sign (+/-) in front of byte, short it will be promoted to int
+
+   public static void main(String... args) {
+        short s=10;
+        var v = +s; // v type is int
+    }
+
+3- u can name class as Var
+
+class Var { // notice its Var in upper case, if lower case var then its compiler error...
+
+}
+
+4- u can name method as var too
+
+public static void var (String str) {
+
+}
+
+5- tricky question:
+
+public class Test {
+    public static void main(String[] args) {
+
+        var result = 0;
+        var tax_rate = 0.05;    // Line 1
+        var price = 100;
+        var adjusted_tax = price * tax_rate;  // Line 2
+        result = price + adjusted_tax;  // compiler error, bcoz u trying to put double (adjusted_tax) in int (result)
+        System.out.println("Adjusted price = " + result);
+    }
+}
+
+--------------------------------------------------------------------------
+############## String Recap ###############
+
+1- when string created not using constructor its stored in special aread in heap
+   called string pool whose purpose is to maintain set of unique strings called interning...
+
+2- when u assign two variables to the same string literal, these strings
+   are considered equal and the comparator == evaluates to true.
+
+    public static void main(String[] args) {
+        String s1 = "hello";
+        String s2 = "hello";
+        System.out.println(s1 == s2); // true
+    }
+
+3- if u use string constructor then it will create a new string reference, hence a new memory address..
+
+    public static void main(String[] args) {
+        String s1 = new String("hello");
+        String s2 = new String("hello");
+        System.out.println(s1 == s2); // false
+    }
+
+4- if u use intern() string method then it will reference back to string pool
+
+    public static void main(String[] args) {
+        String s1 = new String("hello").intern();
+        String s2 = new String("hello").intern();
+        System.out.println(s1 == s2); // true
+    }
+
+5- strings are immutable, means cant be changed.
+
+    public static void main(String[] args) {
+        String s1 = "hello"; // if hello not in string pool then it will be added
+
+        // "hello world" not added to string pool here unless intern() called
+        // here + will create a new string reference and pass the reference to s1
+        s1 = s1 + " world";
+
+        System.out.println("hello world" == s1); // false
+        s1.concat(" world"); // this wont change s1 vale, unless u assigned back again to s1
+                             // like : s1 = s1.concat(" world);
+
+        System.out.println(s1); // hello world
+    }
+
+6- note:  calling intern() will force the string literal to be added in string pool.
+
+    public static void main(String[] args) {
+        String s1 = "hello"; // if hello not in string pool then it will be added
+
+        // "hello world" not added to string pool here unless intern() called
+        // here + will create a new string reference and pass the reference to s1
+        s1 = s1 + " world";
+
+        s1.intern(); // force "hello world" to be added to string pool, thats why below result is true
+        System.out.println("hello world" == s1); // true
+
+    }
+
+--------------------------------------------------------------------------
+############## Creating Strings ###############
+
+
+1- ************************* to memorize **************************
+declaring strings
+
+    public static void main(String[] args) {
+        String s1 = "hello";
+
+        String s2 = new String("hello");
+
+        /******* note: for byte[] and chars[] 2nd param
+         *       represents offset
+         *       and 3rd param represents count
+         *
+         *       i notice everytime we have arr in constructor
+         *       1st param is offset
+         *       2st param is count/length
+         *
+         * ******/
+        byte[] bytes = {'a', 'b', 'c'};
+        String s3 = new String(bytes, 0, 3);
+        String s4 = new String(bytes);
+
+        char[] chars = {'a', 'b', 'c'};
+        String s5 = new String(chars, 0, 3);
+        String s6 = new String(chars);
+
+        StringBuilder sb = new StringBuilder("hello");
+        String s8 = new String(sb);
+
+        int[] arr = {'a', 'b', 'c'};
+        //String s9 = new String(arr); // compiler error, cant use int arr in string constructor, need to use it with offset and count...
+        String s10 = new String(arr, 0, 3);
+
+        String s11 = new String(arr, 1, 3); // this will show runtime error out of bound index
+        // bcoz offset started from 1 and count is 3 , BE CAREFUL IN EXAM ABOUT OFFSET AND COUNT!!!!
+
+        // the proper way to get rid of the above issue is to make count-offset
+
+        int offset = 1;
+        int count = 3;
+        String s12 = new String(arr, offset, count - offset); // okay
+
+    }
+
+
+--------------------------------------------------------------------------
+############## String Concatenation ###############
+
+1- this is not a compiler error to add literal null to string
+    public static void main(String[] args) {
+        String s1 = "hello ";
+
+        s1 = s1 + null;
+        System.out.println(s1);
+
+    }
+
+2- when you concatenate a string to a reference variable, if variable is a reference type,
+   the toString() method on the object is called, if the variable is data type then variable is boxed
+   to a wrapper and its toString method is called.
+
+public class Test {
+    public static void main(String[] args) {
+        String helloString = "hello";
+        // concatenating to an object (not null)
+        Object ourObject = new OurSimpleClass();
+
+        // fourthString will be "hello Our Simple Class"
+        String fourthString = helloString + " " + ourObject;
+        System.out.println("fourthString = " + fourthString);
+
+        /******* notice the output below *********/
+
+        int j = 10;
+        int i = 10;
+        String resultString = i + j + " = " + i + j;
+        System.out.println("resultString is: " + resultString);
+
+    }
+}
+
+class OurSimpleClass {
+    public String toString() {
+        return "Our Simple Class";
+    }
+}
+
+
+3- notice the below output:
+
+public class Test {
+    public static void main(String[] args) {
+
+        String helloString = "hello ";
+
+        helloString += 5 + 7;
+        System.out.println(helloString); // hello 12
+
+        helloString = "hello ";
+
+        helloString = helloString + 5 + 7;
+        System.out.println(helloString); // hello 57
+    }
+}
+
+--------------------------------------------------------------------------
+############## String Manipulating ###############
+
+1- strings start with index 0 and last char is length - 1.
+
+2- start index is inclusive, and ending is exclusive.
+
+3- string comparison:
+   ==     returns true if reference is same.
+   equals returns true if reference are same
+          of if parameter object is string
+          AND the value is the same.
+   equal(Object obj) // it accept object                   /*************** memorize **************/
+   equalsIgnoreCase(String str) // MUST BE STRING          /*************** memorize **************/
+   compareTo(String str) // return 0 in they are same, or negative or positive
+   contentEquals(CharSequence sq) // MUST BE CharSequence  /*************** memorize **************/
+   compareToIgnoreCase(String str) // must be string
+
+
+4- lets say we have 2 strings:
+           String firstString = "Hello";
+           String secondString = null;
+   we will notice that string comparison will handle it differently
+
+   (firstString == secondObject)                   ->     (Hello == null) = false
+   (firstString.equals(secondObject))              ->     Hello.equals(null) = false
+   firstString.equalsIgnoreCase(secondObject))     ->     Hello.equalsIgnoreCase(null) = false
+   (firstString.contentEquals(secondSequence))     -> IT WILL THROW RUNTIME EXCEPTION bcoz 2nd param is null  /*************** memorize **************/
+   (firstString.compareTo(secondString))           -> IT WILL THROW RUNTIME EXCEPTION bcoz 2nd param is null  /*************** memorize **************/
+   (firstString.compareToIgnoreCase(secondString)) -> IT WILL THROW RUNTIME EXCEPTION bcoz 2nd param is null  /*************** memorize **************/
+
+
+5- if we compare two string and 2nd param is null then it will
+   throw runtime exception null pointer if we use :
+   contentEquals , compareTo , compareToIgnoreCase.                                     /*************** memorize **************/
+
+
+--------------------------------------------------------------------------
+############## String Search ###############
+
+1- lastIndexOf
+2- regionMatches
+3- remember for the above method the start offset is inclusive and end offset is exclusive
+
+4- last index of :
+    public static void main(String[] args) {
+
+        String fullText = "testwordtestwordtestword";
+        //String below is so just there to help see the index easier
+        String showIndx = "012345678901234567890123";
+
+        String searchString = "word";
+
+        int lastIndex = fullText.lastIndexOf(searchString);
+        System.out.println("lastIndex = " + lastIndex); // 20
+
+    }
+
+5- lets add offset on lastIndexOf:
+
+    public static void main(String[] args) {
+
+        String fullText = "testwordtestwordtestword";
+        //String below is so just there to help see the index easier
+        String showIndx = "012345678901234567890123";
+
+        String searchString = "word";
+
+        int lastIndex = fullText.lastIndexOf(searchString, 19);
+        System.out.println("lastIndex = " + lastIndex); // 12
+
+    }
+
+6- note that the offset here comes in the middle of word , but it still consider it and include it in the search... /************* TRICKY **********/
+
+    public static void main(String[] args) {
+
+        String fullText = "testwordtestwordtestword";
+        //String below is so just there to help see the index easier
+        String showIndx = "012345678901234567890123";
+
+        String searchString = "word";
+
+        int lastIndex = fullText.lastIndexOf(searchString, 13); // note that the offset here comes in the middle of word , but it still consider it and include it in the search...
+                                                                // try to change to 12,13,14,15 u will get same result which is 12 as lastIndexOf....
+        System.out.println("lastIndex = " + lastIndex); // 12
+
+    }
+
+
+7- match method in string will try to match exactly same string u passing in, it accept also regex...
+
+    public static void main(String[] args) {
+        // Matches uses regexp Pattern matching, so will NOT match a
+        // substring directly, unless it is the whole string...
+        String mississippi = "mississippi";
+        boolean matches = mississippi.matches("miss");
+        boolean indexMatch = (mississippi.indexOf("miss") > -1);
+        System.out.println("matches method returns " + matches +
+                " on 'miss' BUT indexOf>-1 on 'miss' = " + indexMatch);
+
+    }
+
+
+8- match method support regex:
+
+  public static void main(String[] args) {
+        String mississippi = "mississippi";
+        boolean matches = mississippi.matches("^miss(.*)");
+        System.out.println("matches method returns " + matches + " on '^miss(.*)'");
+
+    }
+
+9- you could use Pattern and Matcher to match string:
+
+    public static void main(String[] args) {
+        // You can use Pattern & Matcher to do the same thing...
+        Pattern p = Pattern.compile("(.*)miss(.*)");
+        Matcher m = p.matcher("mississippi");
+        System.out.println("Pattern & Matcher give same result, matches on '(.*)miss(.*)' = "
+                + m.matches());
+    }
+
+10- region match                /************* TRICKY ***************/
+
+    public static void main(String[] args) {
+        String mississippi = "mississippi";
+        // Region Matches, exact case, exact substring
+        System.out.println(mississippi.regionMatches(0, "miss", 0, 4));
+
+
+        // Region Matches, ignore case, exact substring
+        System.out.println(mississippi.regionMatches(true, 0, "MISS", 0, 4));
+
+        // Look for "miss" starting at index 1 in mississippi,,, so first string will be ississippi and it will try to search for miss but no match...
+        // no match found
+        System.out.println(mississippi.regionMatches(1, "miss", 0, 4));
+
+        // Look for "iss" starting at index 2 in mississippi,,,, so first string ssissippi and it will try search for iss but no match found , it should be at very first like ississippi
+        // no match found
+        System.out.println(mississippi.regionMatches(2, "miss", 1, 3));
+
+        // Look for "iss" starting at index 4 in mississippi,,,, so first string is issippi and it will try to match it with iss and found out that iss is the same start as issippi so it match
+        // match found
+        System.out.println(mississippi.regionMatches(4, "miss", 1, 3));
+    }
+
+--------------------------------------------------------------------------
+############## Other String manipulation ###############
+
+
+1- string join method was introduced in java 8
+
+String.join(delimiter , CharSequence... elements )
+
+    public static void main(String[] args) {
+        String str = String.join(",", "hello", "world");
+        System.out.println(str);
+    }
+
+2- u could also use StringJoiner
+StringJoiner(delimiter)
+
+    import java.util.StringJoiner
+
+    public static void main(String[] args) {
+        StringJoiner stringJoiner = new StringJoiner(",");
+        stringJoiner.add("hello");
+        stringJoiner.add("world");
+        System.out.println(stringJoiner.toString());
+    }
+
+2- split string is to convert string into array using regex..
+   note: split support regex..
+
+    public static void main(String[] args) {
+        String str = "hello,world";
+        String[] arr = str.split(",");
+        System.out.println(Arrays.toString(arr)); //[hello, world]
+
+        arr = str.split(" "); // if regex did not match then it will return as one string...
+        System.out.println(arr[0]); //hello,world
+
+        /******** we can also specify the limit of splitting *******/
+
+        str = "hello,world,how,are,you";
+        arr = str.split(",",3);
+        System.out.println(Arrays.toString(arr)); //[hello, world, how,are,you]
+
+    }
+
+--------------------------------------------------------------------------
+############## String Replace ###############
+
+1- note: only string replaceAll and replaceFirst uses regex...
+
+    public static void main(String[] args) {
+        // Create variables.
+        String mississippi = "Mississippi";
+        String[] resultArray = new String[4];
+
+        // Example of: replace(char oldChar, char newChar)
+        // Returns a String
+        resultArray[0] = "Replace s with S : " + mississippi.replace('s', 'S');
+
+        // Example of: replace(CharSequence target, CharSequence replacement)
+        // Returns a String
+        resultArray[1] = "Replace literal \"iss\" with \"ips\" : " +
+                mississippi.replace("iss", "ips");
+
+        // Example of: replaceAll(String regex, String replacement)
+        // Returns a String
+        resultArray[2] = "Replace regexp [i with 2 characters(s or p)] with literal \"ax\" : " +
+                mississippi.replaceAll("(i(s|p){2})", "ax");
+
+        // Example of: replaceFirst(String regex, String replacement)
+        // Returns a String
+        resultArray[3] = "Replace first match of regexp [i with 2 characters(s or p)] " +
+                "with literal \"ax\" : " +
+                mississippi.replaceFirst("(i(s|p){2})", "ax");
+
+        // Printing our resultArray to console
+        for (String result : resultArray) {
+            System.out.println(result);
+        }
+
+        // ... substring and subSequence examples...
+
+        // This call to substring extracts a substring ignoring any
+        // characters prior to index 7
+        System.out.println("mississippi.substring(7) = "
+                + mississippi.substring(7));
+
+        // This call to substring extracts a substring starting at
+        // index = 3 and ending at index 7
+        // (note that character at index 7 is not included)
+        System.out.println("mississippi.substring(3, 7) = "
+                + mississippi.substring(3, 7));  // start index = 3, end index = 7
+
+        // subSequence can be used for both String and StringBuilder Objects.
+        // but both a starting and ending index are required.
+        System.out.println("mississippi.subSequence(3, 7) = "
+                + mississippi.subSequence(3, 7));                                         /************ MEMORIZE ***************/
+
+        System.out.println("mississippi = " + mississippi);
+
+        // reassigning output to the mississipi String reference type.
+        mississippi = mississippi.substring(0, 4);
+        System.out.println("mississippi = " + mississippi);
+    }
+
+
+2- using repeat(0) will return empty string
+
+    public static void main(String[] args) {
+        String repeat = "repeat after me";
+        repeat = repeat.repeat(0); // it will return empty string..
+        System.out.println(repeat);
+
+        System.out.println(repeat.isEmpty());
+    }
+
+
+3- string stip and trim
+   strip : support unicode for stripping strings.
+   trim : does not recognize unicode as whitespace..
+
+
+4- String.valueOf( char array, offset, count);
+
+    public static void main(String[] args) {
+
+        // Returns a String
+        String charsToString = String.valueOf(new char[]{'a', 'b', 'c', 'd', 'e'});
+
+        // Example of : valueOf(char[] data, int offset, int count)
+        // Returns a String
+        String charsToStringPartial = String.valueOf(new char[]{'a', 'b', 'c', 'd', 'e'}, 1, 3);
+        String subString = charsToString.substring(1, 3);
+        /******
+         * notice the difference between subString and valueOf...                       /************ MEMORIZE ***************/
+         *    substring: offset in inclusive and end index is exclusive.
+         *    valueOf: offset is included
+         *             2nd param is count and NOT last index of string...
+         *
+         *    note that whenever u have array char then the first param is offset, 2nd param is count
+         *
+         * ****/
+
+        System.out.println("charsToString = " + charsToString);
+        System.out.println("charsToStringPartial = " + charsToStringPartial
+                + ", subString = " + subString);
+    }
+
+    // another example to see different between String constructor and valueOf and subString...
+
+        public static void main(String[] args) {
+            String george = "FredGeorgeSmith";
+
+            // Constructor used to get substring
+            // beginning offset index 4 inclusive, and 6 characters long
+            String shortGeorge1 = new String(george.toCharArray(), 4, 6); // notice here u must convert it to array of char when u use offset and count....
+            System.out.println("shortGeorge1 = " + shortGeorge1);
+
+            // valueOf method used to get substring
+            // beginning offset index 4 inclusive, and 6 characters long
+            String shortGeorge2 = String.valueOf(george.toCharArray(), 4, 6); // notice here u must convert it to array of char when u use offset and count....
+            System.out.println("shortGeorge2 = " + shortGeorge2);
+
+            // The method substring uses offsets,
+            // beginning offset (inclusive) and ending offset (exclusive)
+            // What happens if we use same parameter values examples above?
+            String shortGeorge3 = george.substring(4, 6);
+            System.out.println("shortGeorge3 = " + shortGeorge3);
+
+            // let's change our second parameter value...
+            String shortGeorge4 = george.substring(4, 10);
+            System.out.println("shortGeorge4 = " + shortGeorge4);
+
+            // Notice that none of these methods change george variable itself
+            System.out.println("george = " + george);
+        }
+
+
+--------------------------------------------------------------------------
+############## String out Of ordinary ###############
+
+1- compareTo:  if string is substring of other string then the calculation will be :
+
+   s1.compareTo(s2)
+   s1.lenght() - s2.lenght();
+
+    public static void main(String[] args) {
+        String s1 = "abc";
+        String s2 = "abcdef";
+
+        System.out.println(s1.compareTo(s2)); // s1.length() - s2.length()  = 3-6 = -3
+    }
+
+2- compareTo: if two strings are different and chars are different then we calculate the distance between these two chars..
+   IMPORTANT NOTE:
+   uppercase letters come first then only lower case...                    /************ MEMORIZE ***************/
+
+   public static void main(String[] args) {
+        String s1 = "abc";
+        String s2 = "ABC";
+
+        System.out.println(s1.compareTo(s2)); // 42 - 10 = 32
+    }
+
+3- compareTo: if both string are equal then compareTo is 0
+
+    public static void main(String[] args) {
+        String s1 = "abc";
+        String s2 = "abc";
+
+        System.out.println(s1.compareTo(s2)); // 0
+    }
+
+
+2- string replace, replaceAll and replaceFirst:
+   when u replace string if there is no match then it WONT create a new string....
+
+    public static void main(String[] args) {
+
+        String stringOriginal = "aaabbb";
+
+        // The behavior is the same for all the replace methods,
+        // if there is no match, a new String object is NOT created.
+        String stringReplaced = stringOriginal.replace('C', 'a');
+        System.out.println("1.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        stringReplaced = stringOriginal.replace("CC", "aa");
+        System.out.println("2.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        stringReplaced = stringOriginal.replaceAll("CC", "aa");
+        System.out.println("3.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        stringReplaced = stringOriginal.replaceFirst("CC", "aa");
+        System.out.println("4.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+    }
+
+3- string replace, replaceAll and replaceFirst:
+   if replacement is same then if u using '' then it wont create a new string,
+   BUT if replacement is "" then it WILL create a new String...                /************* TRICKY **************/
+
+    public static void main(String[] args) {
+
+        String stringOriginal = "aaabbb";
+        String stringReplaced ;
+
+        // The replace method with two chars that are the same does NOT
+        // create a new String object
+        stringReplaced = stringOriginal.replace('a', 'a');
+        System.out.println("5.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        // The method replace with String parameters exhibits
+        // different behavior than the one that accepts chars
+        stringReplaced = stringOriginal.replace("a", "a");
+        System.out.println("6.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        stringReplaced = stringOriginal.replaceAll("a", "a");
+        System.out.println("7.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        stringReplaced = stringOriginal.replaceFirst("a", "a");
+        System.out.println("8.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+    }
+
+4- for subString:
+   note that creating a substring which is same as string does NOT create a new object.
+
+    public static void main(String[] args) {
+
+        String stringOriginal = "aaabbb";
+        String stringReplaced ;
+
+        // Note that creating a 'substring' which is same as string
+        // does NOT create a new object.
+        stringReplaced = stringOriginal.substring(0, stringOriginal.length());
+        System.out.println("9.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced));
+
+        stringReplaced = stringOriginal.substring(0, 3);
+        System.out.println("10.  stringOriginal==stringReplaced = " +
+                (stringOriginal == stringReplaced)); // obviously its false bcoz they are not same...
+    }
+
+5- Question :
+   how many strings are created in the following code?                 /********* TRICKY **************/
+
+
+       public static void main(String[] args) {
+           // compiler calculates this expression to the constant "abc:def" so only one
+           // string is created at runtime on this line
+           String s1 = "abc" + ":" + "def";
+
+           // set up some more strings for next example..
+           String s2 = "s2";
+           String s3 = "s3";
+           String s4 = "s4";
+
+           // The following statement creates 3 string objects
+           // object1 = s2 + s1
+           //         object2 = s3 + object1
+           //                object3 = s4 + object2
+           // If you rewrite this as s5 = (((s4 + s3) + s2) + s1)
+           // it might be easier to count the number of objects created
+           // by counting left parentheses groupings
+           String s5 = s4 + s3 + s2 + s1;
+       }
+
+
+--------------------------------------------------------------------------
+############## StringBuilder ###############
+
+1- string builder is mutable
+2- string builder has a capacity whicj is the number of character spaces allocated to it.
+3- capacity is automatically extended as additions are made to the string builder object.
+4- string builder constructor:
+   StringBuilder()     // default capacity 16
+   StringBuilder(CharSequence s) // s.length() + 16
+   StringBuilder(int capacity) // init capacity
+   StringBuilder(String s)   // s.length() + 16
+
+5- string builder creation:
+
+    public static void main(String[] args) {
+        // creates empty builder
+        // An empty StringBuilder always has initial capacity of 16
+        StringBuilder sb = new StringBuilder();
+
+        // adds 5 character string at beginning
+        sb.append("Hello");
+        System.out.println("sb.length =" + sb.length()); // 5
+        System.out.println("sb.capacity = " + sb.capacity()); // 16
+
+        StringBuilder sb2 = new StringBuilder("Hello");
+        System.out.println("sb2.length = " + sb2.length());  // 5
+
+        // Capacity is the initial capacity (16) + "Hello".length()
+        System.out.println("sb2.capacity = " + sb2.capacity()); // 5 + 16 = 21
+
+        StringBuilder sb3 = new StringBuilder();
+        // Add 26 character string at beginning, which exceeds the
+        // initial capacity of 16
+        sb3.append("abcdefghijklmnopqrstuvwxyz");
+        System.out.println("sb3.length = " + sb3.length()); // 26
+        System.out.println("sb3.capacity = " + sb3.capacity());// 34
+
+        // You can set initial capacity manually
+        StringBuilder sb4 = new StringBuilder(26);
+        // Add 26 character string at beginning
+        sb4.append("abcdefghijklmnopqrstuvwxyz");
+        System.out.println("sb4.length = " + sb4.length()); // 26
+        System.out.println("sb4.capacity = " + sb4.capacity()); //26
+    }
+
+
+6- string builder comparators:
+
+    public static void main(String[] args) {
+
+        // Set up some test data.
+        StringBuilder sb = new StringBuilder("This is a test");
+        StringBuilder sb2 = new StringBuilder("This is a test");
+
+        // == comparator (compares references)
+        System.out.println("(sb == sb2) = " + (sb == sb2));
+
+        // .equals operator from java.lang.Object
+        System.out.println("(sb.equals(sb2)) = " + (sb.equals(sb2)));
+
+        // .compareTo method defined on StringBuilder Object
+        System.out.println("(sb.compareTo(sb2)) = " + (sb.compareTo(sb2)));
+
+        // .equals used to compare String Values of StringBuilder objects
+        System.out.println("sb.toString().equals(sb2.toString()) = " +
+                sb.toString().equals(sb2.toString()));
+
+        // == used to compare String Values of StringBuilder objects
+        System.out.println("sb.toString() == sb2.toString()) = " +
+                (sb.toString() == sb2.toString()));
+    }
+
+7- append method inserting builder add data to end of current value of the string builder.
+
+    public static void main(String[] args) {
+
+        /*
+            These are the many flavors of append:
+
+            StringBuilder append(boolean b)
+            StringBuilder append(char c)
+            StringBuilder append(char[] str)
+            StringBuilder append(char[] str, int offset, int len)
+            StringBuilder append(double d)
+            StringBuilder append(float f)
+            StringBuilder append(int i)
+            StringBuilder append(long lng)
+            StringBuilder append(CharSequence s)
+            StringBuilder append(CharSequence s, int start, int end)
+            StringBuilder append(Object obj)
+            StringBuilder append(String str)
+            StringBuilder append(StringBuffer sb)
+            StringBuilder appendCodePoint(int codePoint)
+         */
+
+        StringBuilder sb = new StringBuilder(100);
+        sb.append("Hello ")
+                .append(new char[]{'W', 'o', 'r', 'l', 'd'})
+                .append(',')
+                .append((Object) " My ")
+                .append("NewNumber ", 3, 9)
+                .append(" is ")
+                .appendCodePoint(97)
+                .append(" float with the value of: ")
+                .append(204.50f);
+        System.out.println("sb = " + sb);
+        System.out.println("sb.length() = " + sb.length());
+        System.out.println("sb.capacity() = " + sb.capacity());
+
+        /*
+        Some of the many insert methods...
+
+        StringBuilder insert(int offset, boolean b)
+        StringBuilder insert(int offset, char c)
+        StringBuilder insert(int offset, char[] str)
+        StringBuilder insert(int offset, char[] str, int offset, int len)
+        StringBuilder insert(int offset, double d)
+        StringBuilder insert(int offset, float f)
+        StringBuilder insert(int offset, int i)
+        StringBuilder insert(int offset, long lng)
+        StringBuilder insert(int dstoffset, CharSequence s)
+        StringBuilder insert(int dstoffset, CharSequence s, int start, int end)
+        StringBuilder insert(int offset, Object obj)
+        StringBuilder insert(int offset, String str)
+     */
+
+        StringBuilder sb2 = new StringBuilder(100);
+        sb2.insert(0, "Hello , is a float with the value of ")
+                .insert(6, new char[]{'W', 'o', 'r', 'l', 'd'})
+                .insert(13, (Object) "My ")
+                .insert(16, "NewNumber ", 3, 10)
+                .insert(sb2.length(), 204.5f);
+
+        System.out.println("sb2 = " + sb);
+        System.out.println("sb2.length() = " + sb.length());
+        System.out.println("sb2.capacity() = " + sb.capacity());
+    }
+
+8- string manipulation :
+
+ public static void main(String[] args) {
+
+        // Create and Initialize a StringBuilder Object
+        StringBuilder sb = new StringBuilder("World Hello, How are you?");
+        System.out.println("Original Value in sb = " + sb);
+
+        // Delete the comma from the string,
+        // Use indexOf to retrieve the index of the comma
+        System.out.println("sb.deleteCharAt(sb.indexOf(\",\") = " +
+                sb.deleteCharAt(sb.indexOf(",")));
+
+        // Delete everything after where the comma used to be..
+        System.out.println("sb.delete(11,sb.length()) = " +
+                sb.delete(11, sb.length()));
+
+        // Now reverse the entire string
+        sb.reverse();
+        System.out.println("sb after reverse() method called = " + sb);
+
+        // You can assign the reverse method's result to a
+        // different StringBuilder variable...
+        StringBuilder rb = sb.reverse();
+        System.out.println("(rb == ss) = " + (rb == sb));
+
+        // Now you have two StringBuilder references pointing to the
+        // same mutable text
+        sb.append(" How are you?");
+        System.out.println("sb = " + sb);
+        System.out.println("rb = " + rb);
+
+        String subString = sb.substring(0, 5);
+        System.out.println("subString = " + subString);
+        System.out.println(sb);
+
+    }
+
+9- StringBuffer is thread safe and mutable but its not part of the exam..
+
+--------------------------------------------------------------------------
+############## StringBuilder out of ordinary ###############
+
+1- tricky questions:
+
+    public static void main(String[] args) {
+        // Create empty StringBuilder
+        StringBuilder builder = new StringBuilder();
+
+        // Add some code with leading/trailing whitespcace
+        builder.append("  ABCD                 ");
+        System.out.println("Original Value of builder = *" + builder + "*"); // *  ABCD                 *
+        System.out.println("Length of builder = " + builder.length()); // 23
+        System.out.println("Capacity of builder = " + builder.capacity()); // 34
+
+        // What do you think trimToSize does?
+        builder.trimToSize(); // reduce the storage size
+        System.out.println("Current Value of builder = *" + builder + "*"); // *  ABCD                 *
+        System.out.println("Length of builder = " + builder.length()); // 23
+        System.out.println("Capacity of builder = " + builder.capacity()); // 23 notice its same length as length()
+
+        builder.replace(0, builder.length(), builder.toString().strip());
+        System.out.println("Next Value of builder = *" + builder + "*"); // *ABCD*
+        System.out.println("Length of builder = " + builder.length()); // 4
+        System.out.println("Capacity of builder = " + builder.capacity()); // 23
+
+        // Let's now explore getChars method on String and StringBuilder
+
+        // Test data
+        builder.append(" just more text because we need more text");
+        char[] myCharacterArray1 = new char[10];
+        char[] myCharacterArray2 = new char[10];
+
+        // calling getChars on a String with srcBegin = 20,  srcEnd = 27
+        builder.toString().getChars(20, 27, myCharacterArray1, 0); // getChar copy string to char array   /*************** memorize ***********/
+        // IMPORTANT NOTE:  getChar accept only char array an NOT charSequance or String,                 /*************** memorize ***********/
+        // IMPORTANT NOTE: getChar destenation array MUST be initilized                                   /*************** memorize ***********/
+        // calling getChars on a StringBuilder object with srcBegin = 20,  srcEnd = 27
+        builder.getChars(20, 27, myCharacterArray2, 0);
+
+        System.out.println("myCharacterArray1 = " +
+                java.util.Arrays.toString(myCharacterArray1)); // myCharacterArray1 = [b, e, c, a, u, s, e,  ,  ,  ]
+        System.out.println("myCharacterArray2 = " +
+                java.util.Arrays.toString(myCharacterArray2)); // myCharacterArray2 = [b, e, c, a, u, s, e,  ,  ,  ]
+
+        // Set up some test data
+        char[] myCharacterArray3 = new char[builder.length()];
+        char[] myCharacterArray4 = new char[builder.length()];
+
+        // calling getChars on a String with srcBegin = 20,  srcEnd = 21
+        builder.toString().getChars(20, 21, myCharacterArray3, 0);
+        // calling getChars on a StringBuilder object with srcBegin = 20,  srcEnd = 21
+        builder.getChars(20, 21, myCharacterArray4, 0);
+        System.out.println("myCharacterArray3 = " +
+                java.util.Arrays.toString(myCharacterArray3)); // myCharacterArray3 = [b,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ]
+        System.out.println("myCharacterArray4 = " +
+                java.util.Arrays.toString(myCharacterArray4)); // myCharacterArray3 = [b,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ]
+
+        // Set up additional test data
+        char[] myCharacterArray5 = new char[10];
+        char[] myCharacterArray6 = new char[10];
+
+        // change destination index from 0 to 3 for String
+        builder.toString().getChars(20, 27, myCharacterArray5, 3);
+        // change destination index from 0 to 3 for String
+        builder.getChars(20, 27, myCharacterArray6, 3);
+
+        System.out.println("myCharacterArray5 = " +
+                java.util.Arrays.toString(myCharacterArray5)); // myCharacterArray5 = [ ,  ,  , b, e, c, a, u, s, e]
+        System.out.println("myCharacterArray6 = " +
+                java.util.Arrays.toString(myCharacterArray6)); // myCharacterArray6 = [ ,  ,  , b, e, c, a, u, s, e]
+
+        // Let's change the destination index
+        // the below code will throw java.lang.StringIndexOutOfBoundsException bcpz the dest arr is shorter that 20->27
+        // the destination char array size must be greater or equal to the length of selected source + defined destination index...
+//        char[] myCharacterArray7 = new char[5];
+//        char[] myCharacterArray8 = new char[5];
+//        builder.toString().getChars(20, 27, myCharacterArray7, 3);
+//        builder.getChars(20, 27, myCharacterArray8, 3);
+//        System.out.println("myCharacterArray7 = " +
+//                java.util.Arrays.toString(myCharacterArray7));
+//        System.out.println("myCharacterArray8 = " +
+//                java.util.Arrays.toString(myCharacterArray8));
+    }
+
+2- tricky question :
+
+    public static void main(String[] args) {
+
+        StringBuilder builder = new StringBuilder(5);  //  Line 1
+        builder.append("abcdefghijklmnopqrstuvwxyz");            //  Line 2
+        char[] myCharArray;                                     //  Line 3
+        if ("hello" == "hello") myCharArray = new char[5];
+        builder.getChars(0, 5, new char[5], 0);  //  Line 4 (notice that src is 0 and srcEnd is 5 so its still can fit in new char[5])
+                                                                        //  if u change srcEnd to 6 then it shows a runtime error....
+        System.out.println(new String(myCharArray).trim() + "*"); // Line
+    }
+
+

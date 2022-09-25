@@ -1,0 +1,62 @@
+######## creating a simple java Program ################
+
+1- running java thro commandline:
+   java -cp out/prod             garden.vege.VineVege (FQCN means fully qualified name)
+            output                 input
+            compiled class file       java class
+
+
+2- if u want to put the .class output to different folder:
+   javac -d build        src/garden/vegetable/VineVegetable.java
+            output              input java class
+            folder
+
+3- by default java.lang is auto imported, so we dont have to explicitly import it.
+
+4- cant put two package in java class, example:
+package a;
+package b;
+
+import java.lang.Math.*
+...
+..
+
+5- cant use same class name when u import it and declare it, example:
+
+example:
+
+import java.lang.Number; // if u comment out this then it works fine....
+
+class Number {
+
+}
+
+public class Test {
+
+    public static void main(String... args) {
+        double dd = Math.PI;
+
+    }
+}
+
+6- remember to read import statements carefully at the exam,
+example:
+
+import static a.e.StaticImportTest2.APP_NAME; // this will import only this static field APP_NAME
+import static a.e.StaticImportTest2.*; // this will import all  static fields and methods
+import a.e.StaticImportTest; // this will import instance classes .
+
+7- if u see package statements not first line of the code then its a compiler error, example:
+
+import java.lang;
+package alammar.test; // here it will show a compiler error....
+
+8- for the import statements, lets say we have the following packages a, and b is sub package of a
+   a.
+     b.
+     c.
+   when we import a.* that does not means import a.b.*
+
+----------------------------------------------------------------------
+
+

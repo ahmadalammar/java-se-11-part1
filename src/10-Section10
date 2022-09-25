@@ -1,0 +1,883 @@
+############# Abstract and interface #################
+
+#### interface rules
+1- all field in interface is public static final implicitly.
+2- all public signature are public abstract implicitly.
+3- static and non-static method can be private...
+4- method body in interface exist only for default, private and static methods.
+
+example below:
+
+
+interface InterfaceExample {
+
+    // Define some variables
+
+    // no modifiers at all
+    String interfaceName = "InterfaceExample";
+
+    // triple modifiers, public static final in implicitly added....
+    public static final String publicStaticFinalInterfaceName = "PublicStaticFinalInterfaceName";
+
+    // These methods are private because we declared them private.
+    private String privateMethod() {
+        return "private";
+    }
+
+    private static String privateStaticMethod() {
+        return "private static";
+    }
+
+    // These methods are public implicitly
+    default String defaultMethod() {
+        // You can call private method from a default method
+        return privateMethod() + " then default";
+    }
+
+    static String publicStaticMethod() {
+        // You can call private static method from public static method
+        return InterfaceExample.privateStaticMethod() + " then static";
+    }
+
+    // This is the public method that would, in theory, be the method
+    // that you want all implementing classes to have in common.
+    abstract void theImportantMethod();
+}
+
+public class Test implements InterfaceExample {
+    public static void main(String[] args) {
+
+        // Regardless of how you define it, a variable on an interface is
+        // public static final
+        System.out.println("All fields on an interface are" +
+                " public static final:");
+        System.out.println(InterfaceExample.interfaceName);
+        System.out.println(InterfaceExample.publicStaticFinalInterfaceName);
+
+        System.out.println("\nExecuting concrete methods on interface");
+        // public static method can be accessed from type
+        System.out.println(InterfaceExample.publicStaticMethod());
+
+        // default method can be accessed from object which implements type
+        Test it = new Test();
+        System.out.println(it.defaultMethod());
+
+        System.out.println("\nExecuting methods using the interface type");
+        Test anotherIt = new Test();
+        it.testInterface(anotherIt);
+
+        Object o = anotherIt;
+        it.testInterface(o);
+
+    }
+
+    public void theImportantMethod() {
+        System.out.println("This is the important method that all objects " +
+                "implementing InterfaceTest must override and implement ");
+    }
+
+    // Method that accepts the interface as a parameter
+    public void testInterface(InterfaceExample it) {
+        System.out.println("Executing testInterface with InterfaceExample");
+        it.theImportantMethod();
+    }
+
+    // Method that accepts on object as a parameter
+    public void testInterface(Object o) {
+        System.out.println("Executing testInterface with Object");
+        // Using instanceof with an interface
+        if (o instanceof InterfaceExample) {
+
+            // Casting using an interface
+            InterfaceExample it = (InterfaceExample) o;
+            it.theImportantMethod();
+        }
+
+    }
+
+}
+
+------------------------------------
+
+2- casting with class VS casting with interface....
+
+/*
+Learn Programming Academy's Java 1Z0-815 Certification Exam Course
+Section 10: Programming Abstractly Through Interfaces
+Topic: Create and implement interfaces
+*/
+
+// Very simple interface with one method
+interface Laughable {
+    void laugh();
+}
+
+// A class that implements the interface
+class Joke implements Laughable {
+    public void laugh() {
+        System.out.println("That joke is laughable");
+    }
+}
+
+// A class that does not implement the interface
+class Story {
+    public void read() {
+        System.out.println("This story is a good read");
+    }
+}
+
+// A class that extends Story class above and implements
+// interface
+class FunnyStory extends Story implements Laughable {
+
+    // implements laugh() method from Laughable
+    public void laugh() {
+        System.out.println("That story is funny");
+    }
+
+    // overrides read() method from Story
+    public void read() {
+        System.out.println("This story is a good giggle");
+    }
+}
+
+// class Farce will be both a Story and Laughable
+class Farce extends Story implements Laughable {
+    public void laugh() {
+        System.out.println("This story is funny in a farcical way");
+    }
+}
+
+// The main class
+public class Test {
+    public static void main(String[] args) {
+//        Story story = new Story();
+        Story story = new Farce();
+        FunnyStory funnyStory = new FunnyStory();
+        Joke joke = new Joke();
+
+        // call pass through method on different types
+        // of objects
+        testLaughable(joke);
+        testLaughable(funnyStory);
+
+        // call pass through method on different types
+        // of objects
+        testStory(story);
+        testStory(funnyStory);
+
+        // notice the difference between the following two lines,
+        // the first line we are casting it to laughable interface and we did not get any compiler error
+        // bcoz compiler implement different rules of checking casting with interface...
+        // for class casting compiler can catch it during run time,...
+        // Cast objects and pass to our methods
+        testLaughable((Laughable) story);                               /*************** TRICKY ***************/
+//        testStory((Story) joke);
+    }
+
+    // Pass through method to execute laugh method on any
+    // object that implements Laughable
+    public static void testLaughable(Laughable l) {
+        l.laugh();
+    }
+
+    // Pass through method to execute read method on any
+    // object 'Is A' Story
+    public static void testStory(Story s) {
+        s.read();
+    }
+}
+
+--------------------------------------------------
+3- if your class implements 2 interface has the same default method,
+   then your class will have a conflict, so u can either remove one of the interfaces
+   or override this default method in class....
+
+/*
+Learn Programming Academy's Java 1Z0-815 Certification Exam Course
+Section 10: Programming Abstractly Through Interfaces
+Topic: Create and implement interfaces
+*/
+
+// Teachable interface with abstract method teach
+// and default method teachTheseLessons
+interface Teachable {
+
+    // default method
+    default void teachTheseLessons() {
+        System.out.println("Everyone should learn art and music");
+    }
+
+    void teach();
+}
+
+// Trainable interface with abstract method train
+// and default method teachTheseLessons
+interface Trainable {
+
+    // default method
+    default void teachTheseLessons() {
+        System.out.println("Train them to do this");
+    }
+
+    void train();
+}
+
+// Our class implements one of these interfaces for now
+//this class implement 2 interfaces has same default method teachTheseLessons(),
+// so Test class has to override this method to solve the conflict.
+
+public class Test implements Teachable, Trainable {               /************** TRICKY *******************/
+
+    // we implement teach and call the default method
+    public void teach() {
+        teachTheseLessons();
+    }
+
+    // we implement train for later use
+    public void train() {
+        System.out.println("Everyone can be trained to get up early");
+
+    }
+
+    // default method override
+    public void teachTheseLessons() {
+        System.out.println("Everyone should learn math and science");
+    }
+
+    // main method calls teach and train() methods
+    public static void main(String[] args) {
+        Test t = new Test();
+        t.teach();
+        t.train();
+    }
+}
+
+
+-----------------------------------
+4- the following example is when u have a class that extend abstract
+   and implement interface and both abstract and interface git same field and method...
+
+   key take note here is overridden method MUST return same type OR more specific type (Is A relationship)
+   if abstract method return a type that is completely different from interface then the compiler trapped ,
+   bcoz he does not know which one to implement..
+
+                                                        /************** TRICKY ************/
+
+// interface Confusable has a constant name and abstract method
+interface Confusable {
+    String name = "Confusable";
+
+    String confuse();
+}
+
+// Abstract class Confused has a constant name and abstract method
+abstract class Confused {
+    public static String name = "Confused";
+
+    abstract Object confuse();
+}
+
+// AmbiguousExamples will demonstrate some problems with multiple
+// inheritance of type
+public class Test extends Confused implements Confusable {
+    public static void main(String[] args) {
+        Test a = new Test();
+        System.out.println("The method confuse returns: " + a.confuse());
+    }
+
+    // notice here return type is string , its sub-class of Object and same type as String from interface....
+    // if we change abstract Object confuse(); to abstract int confuse(); then the below code will show compiler error
+    // and compiler trapped.....
+    public String confuse() {
+        return Confused.name;   // MUST put full qualifier , otherwise its a compiler error
+    }
+}
+
+
+-------------------------------------------
+
+tricky question
+
+-------------- Test.java source code ------------------
+
+public interface Test {
+    String name ="Test";
+    void test();
+}
+Which of the following statements is true:
+
+A.  Any class that implements Test will not be able to access the name attribute unless it is in the same package
+
+B.  Any class that implements Test must define a concrete method public void test()
+
+C.  Any interface that extends Test must override the test() method
+
+D.  Any object instantiated from a class that implements Test can update the name attribute if it is in the same package
+
+E.  Any class that implements Test can define its own field name  (correct answer)
+
+F.  None of the above
+
+
+-------------------------------------------------------
+
+- Note about interface and abstract:
+1- u cant instantiate an instance of this type.
+2- u can define abstract constructor...
+
+abstract class Animal extends CounterClass {
+    public Animal(String name, String type) {
+        this.name = name;
+        this.type = type;
+        countMyInstances();
+    }
+
+    private String name;
+    private String type;
+}
+
+----------------------------------------------------
+TRICKY question                      /**************** TRICKY *****************/
+
+interface ITest {
+    void myMethod();
+}
+abstract class ATest implements ITest {
+    abstract void myMethod(); // Line 1 notice here it will show compiler error bcoz its weaker modifier than parent....
+}
+
+public class Test extends ATest {
+    public static void main(String[] args) {
+        Test t = new Test();
+        t.myMethod();
+    }
+
+    public void myMethod() {   // Line 2
+        System.out.println("Success");
+    }
+}
+
+
+---------------------------------------------------------------------
+############ declaring and using arraylist and list ###############
+
+list declaration:
+
+public interface List<E> extends Collection<E> {
+
+}
+
+ArrayList declaration:
+
+public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, Serializable {
+
+}
+
+1- ArrayList init:
+        // Initialize the String-typed ArrayList using the int argument
+        // which sets the initial capacity of the ArrayList
+        stringArray = new ArrayList<String>(10);
+
+        // Initialize the Integer-typed ArrayList using the Collections
+        // parameter which passes values to the ArrayList
+        integerArray = new ArrayList<Integer>(List.of(10, 20, 30));
+
+        // You can leave the type out of the right hand set of <>
+        ArrayList<String> abc = new ArrayList<>();
+
+2- NOTE: List.of and List.copyOf and immutable and cant accept null values.
+
+3- NOTE about list.remove:
+        stringArray.remove("String_5"); // this will return a boolean true of false
+        stringArray.remove(0); // this will return the object that has been removed
+        stringArray.removeIf(s -> s.contains("_2")); // // this will return a boolean true of false, it take Predictable<E>
+
+4- NOTE about list.add:
+            stringArray.add(1, "String_" + (i + 1)); // this will return void
+            stringArray.add("OKAY"); // this will return boolean true or false if item added successfully
+
+5- NOTE about replaceAll, not in list there is NO replace method, replace method is only at string...
+
+            stringArray.replaceAll((s) -> s.replace("Test_", "String_"));
+            // it take UnaryOperator
+
+6- ArrayList.toArray example, just run and see the output...
+   Note: the type of array returned from toArray is determined by the parameter passed..
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Test {
+    public static void main(String[] args) {
+
+        // testValue will be used to access a single value in returned
+        // array
+        int testValue = 0;
+
+        // This is a generically typed ArrayList, passing Integer as the
+        // parameterized type.
+        ArrayList<Integer> intList = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+
+        // This is a raw type ArrayList
+        ArrayList rawList = new ArrayList(List.of(1, 2, 3, 4, 5));
+
+        // Set up the parameter we will pass to the toArray() method
+        Integer[] aIntArray = new Integer[10];
+
+        System.out.println("---- All tests executed with lists that" +
+                " contain: " + rawList + " ----");
+        System.out.println("\nScenario 1:  Parameter is reference variable" +
+                " for Integer[10], elements all null");
+        // Scenario 1: array.length >= list.size();
+        //             and array elements initialized to null
+        // The method toArray([]<T>) populates the passed array with as
+        // many elements as list contains and returns passed array back.
+        // No new array is created.
+        var bInt = intList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to var = " +
+                bInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(bInt));
+        System.out.println("--- aIntArray array elements = " +
+                Arrays.toString(aIntArray)); // same as aInt
+
+
+        // No casting required.
+        testValue = bInt[0];
+        System.out.println("--- No cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // Reset the array we use as a parameter between tests, so
+        // tests between raw ArrayList and generic ArrayList are same
+        aIntArray = new Integer[10];
+
+        // A raw ArrayList will still return array passed, in
+        // this case aIntArray reference
+
+        var bRaw = rawList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList assigned to var = " +
+                bRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(bRaw));
+
+        // Casting required.
+        testValue = (int) bRaw[0];
+        System.out.println("--- Cast required at individual level: the " +
+                "first element is " + testValue);
+
+        System.out.println("\nScenario 2:  Parameter is reference variable" +
+                " for Integer[10], elements all populated");
+        // Scenario 2: array.length > list.size();
+        //             and array elements initialized (not null)
+        // the method toArray([]<T>) populates passed array with as many
+        // elements as list contains, and has one other, maybe unexpected
+        // behavioral twist - it sets the element at list.size() to null,
+        // leaving all other elements at indices > list.size() as they were.
+        aIntArray = new Integer[]{11, 22, 33, 44, 55, 66, 77, 88, 99, 1010};
+        Integer[] cInt = intList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to Integer[] = " +
+                cInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(cInt));
+        System.out.println("--- aIntArray array elements = " +
+                Arrays.toString(aIntArray)); // same as aInt...
+
+        // No casting required.
+        testValue = cInt[0];
+        System.out.println("--- No cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // Reset the array we use as a parameter between tests, so
+        // tests between raw ArrayList and generic ArrayList are same
+        aIntArray = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        // A raw ArrayList will still return array passed, in
+        // this case aIntArray reference, but to assign it to an
+        // Integer[] array we must cast.
+        Integer[] cRaw = (Integer[]) rawList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList assigned to  Integer[] " +
+                " required casting = " + cRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(cRaw));
+
+        // No Casting required.
+        testValue = cRaw[0];
+        System.out.println("--- No Cast required at individual level since" +
+                " we cast entire array to (Integer[]) : the first element is "
+                + testValue);
+
+        System.out.println("\nScenario 3:  No parameter passed");
+        // Scenario 3: no parameter
+        // the method toArray() populates a newly instantiated Object[]
+        // array with the list's elements, which happen to all be Integer.
+        // The behavior is the same for both a raw list and generic list
+        Object[] dInt = intList.toArray();   // CANNOT cast to (Integer[])               /***************** TRICKY *****************/
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to Object[] = " +
+                dInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(dInt));
+
+        // Casting required.
+        testValue = (int) dInt[0];
+        System.out.println("--- Cast required at individual level:" +
+                " the first element is " + testValue);
+
+        Object[] dRaw = intList.toArray();
+        System.out.println("Result type from ArrayList " +
+                "assigned to Object[] = " +
+                dRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(dRaw));
+
+        // Casting required.
+        testValue = (int) dRaw[0];
+        System.out.println("--- Cast required at individual level:" +
+                " the first element is " + testValue);
+
+
+        System.out.println("\nScenario 4:  Array passed is too small");
+        // Scenario 4: array.length < list.size();
+        //             and array elements initialized to null or otherwise
+        // the method toArray() populates a newly instantiated
+        // array of the same type as the parameter passed,
+        // and the size of the list itself, not the parameter passed
+        aIntArray = new Integer[3];
+
+        // Let's make no assumptions about what is returned...
+        var eInt = intList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to var = " +
+                eInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(eInt));
+        System.out.println("--- aIntArray array elements = " +
+                Arrays.toString(aIntArray)); // notice its different from eInt, all values is null ...
+
+
+        // No casting required.
+        testValue = eInt[0];
+        System.out.println("--- No cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // Reset the array we use as a parameter between tests, so
+        // tests between raw ArrayList and generic ArrayList are same
+        aIntArray = new Integer[3];
+
+        // A raw ArrayList will still return an Integer[] array
+
+        var eRaw = rawList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList assigned to var = " +
+                eRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(eRaw));
+
+        // Casting required.
+        testValue = (int) eRaw[0];
+        System.out.println("--- Cast required at individual level: the " +
+                "first element is " + testValue);
+
+        System.out.println("\nScenario 5:  Array passed is now Number[] and not a reference variable");
+        // Scenario 5: array.length < list.size();
+        //             and no reference to array passed
+        // the method toArray() populates a newly instantiated
+        // array of the same type as the parameter passed,
+        // and the size of the list itself, not the parameter passed
+
+        var fInt = intList.toArray(new Number[0]);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to var = " +
+                fInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(fInt));
+
+        // casting required.
+        testValue = (int) fInt[0];
+        System.out.println("--- Cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // A raw ArrayList will still return a Number[] array
+
+        var fRaw = rawList.toArray(new Number[0]);
+        System.out.println("Result type from ArrayList assigned to var = " +
+                fRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(fRaw));
+
+        // Casting required.
+        testValue = (int) fRaw[0];
+        System.out.println("--- Cast required at individual level: the " +
+                "first element is " + testValue);
+    }
+
+}
+
+7- Other ArrayList methods: contain, equal, containAll, indexOf, lastIndexOf....
+
+// just run and read the output...
+
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+public class Test {
+    public static void main(String[] args) {
+
+        ArrayList<String> firstArray = new ArrayList(List.of("ABC", "DEF", "GHI", "JKL", "MNO"));
+        ArrayList<String> secondArray = new ArrayList(List.of("ABC", "DEF", "GHI", "JKL", "MNO"));
+        ArrayList<String> thirdArray = new ArrayList<>();
+
+        // isEmpty() returns true if there are no elements in array
+        System.out.println("thirdArray.isEmpty() = " + thirdArray.isEmpty());
+
+        // .equals() returns true if element values are equal
+        System.out.println("firstArray.equals(secondArray)) = "
+                + (firstArray.equals(secondArray)));
+        System.out.println("firstArray.equals(thirdArray)) = "
+                + (firstArray.equals(thirdArray)));
+
+        // .contains() returns true if element values are equal
+        System.out.println("firstArray.contains(\"DEF\")) = "
+                + (firstArray.contains("DEF")));
+        System.out.println("firstArray.contains(\"ZZZ\")) = "
+                + (firstArray.contains("ZZZ")));
+
+        // .containsAll() must find all elements in the list,
+        // order does not matter
+        System.out.println("firstArray.containsAll(\"ABC,DEF\")) = "
+                + (firstArray.containsAll(List.of("ABC", "DEF"))));
+
+        System.out.println("firstArray.containsAll(\"DEF,ABC\")) = "
+                + (firstArray.containsAll(List.of("DEF", "ABC"))));
+
+        System.out.println("firstArray.containsAll(\"ZZZ,ABC\")) = "
+                + (firstArray.containsAll(List.of("ZZZ", "ABC"))));
+
+        // .indexOf returns -1 if element not found or the
+        // index of element if found
+        System.out.println("firstArray.indexOf(\"DEF\")) = "
+                + (firstArray.indexOf("DEF")));
+        System.out.println("firstArray.indexOf(\"ZZZ\")) = "
+                + (firstArray.indexOf("ZZZ")));
+
+        // .lastIndexOf returns -1 if element not found or the
+        // index of element if found
+        System.out.println("firstArray.lastIndexOf(\"DEF\")) = "
+                + (firstArray.lastIndexOf("DEF")));
+        System.out.println("firstArray.lastIndexOf(\"ZZZ\")) = "
+                + (firstArray.lastIndexOf("ZZZ")));
+
+        // sublist returns a reduced list, using starting index,
+        // and ending index
+        System.out.println("firstArray.subList(2,4)) = "
+                + (firstArray.subList(2, 4)));
+
+        Iterator forwardIt = firstArray.iterator();
+        while (forwardIt.hasNext()) {
+            System.out.print(forwardIt.next() + " ");
+        }
+
+        // The ListIterator allows you to specify a starting index
+        ListIterator traverseIt = firstArray.listIterator(2);
+        if (traverseIt.hasNext())
+            System.out.println("\ntraverseIt.next() = " + traverseIt.next());
+
+        // Reset ListIterator for example
+        traverseIt = firstArray.listIterator(2);
+        if (traverseIt.hasPrevious()) {
+            System.out.println("traverseIt.previous() = " + traverseIt.previous());
+        }
+    }
+}
+
+8- difference between list.add and list.set...                  /******************* TRICKY ***************/
+
+        // You can add an element at an index that is one larger than
+        // the # of elements
+        typedList.add(typedList.size(), new BaseClass("def")); // its okay it will add element at end of list...
+
+        // You cannot set an element at an index that is one larger than
+        // the # of elements
+        // typedList.set(typedList.size(), new BaseClass("def")); // it will show run time error.. IndexOutOfBoundsException...
+
+        // typedList.add(typedList.size() + 1, new BaseClass("def")); // this will also show runtime exception, u can only use add with <= list.size.
+
+
+9- another example about list.set
+
+        // Next, we create a typed List which we'll try to add to our
+        // ArrayLists
+        List<BaseClass> typedSubList = List.of(new BaseClass("efg"),
+                new BaseClass("fgh"),
+                new BaseClass("hij")); // here we define list of BaseClass....
+
+        // You can add a collection at an index that is one larger than
+        // the # of elements
+        typedList.addAll(typedList.size(), typedSubList); // we are adding typedSubList to end of typedList....
+
+        // Typed ArrayList catches mistakes at compile time.. Maybe you
+        // forgot that set does not mean setAll....
+        typedList.set(0, typedSubList); // its a compiler error, bcoz required BasedClass and u r passing a List<BaseClass>, remember that typedList is List<BasedClass>
+        // and u can only set/add BaseClass...
+        rawList.set(0, typedSubList); // here its okay to pass the whole list bcoz its rawList, but remember that u need to cast it in order to get the subList...
+
+10- List does not have a method called setAll , this method is in Arrays not in List....        /*********** TRICKY *********/
+
+11- TRICKY QUESTION                    /******** TRICKY ***********/
+
+remember that List.Of and List.copyOf DOES NOT accept null
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Test {
+    public static void main(String[] args) {
+
+        ArrayList<String> blist = new ArrayList<>(List.of("A", "B", "C", "D"));  // Line 1
+        String[] bArray = blist.toArray(new String[5]);   // Line 2
+        ArrayList<String> clist = new ArrayList<String>(List.of(bArray));   // Line 3
+
+        clist.add("E");
+        System.out.println(clist);
+    }
+}
+
+Which happens when you compile and run this code?
+
+A. Code compiles and outputs: [A, B, C, D, E]
+
+B. Code compiles and outputs: [A, B, C, D, null, E]
+
+C. Code compiles but throws NullPointerException (correct answer)
+Code compiles but you cannot use List.of method with a List that contains nulls, which the array we pass to the method does.
+When you pass an array to the toArray() method with a size greater than the number of elements in the List,
+the result is an array, filled with nulls past the list size.
+
+D. Compiler Error occurs on Line 1
+
+E. Compiler Error occurs on Line 2
+
+F. Compiler Error occurs on Line 3
+
+
+12- TRICKY QUESTION             /**************** VERY TRICKY **************/
+remember that List.copyOf accept only Collection as its parameter and does not support variable args like List.copyOf(1,2,3)...
+should be List.copyOf(Arrays.asList(1,2,3));....
+
+Which statement is not true about the copyOf method on java.util.List.
+
+A. The list it returns is immutable
+
+B. The list which is being copied must not contain nulls
+
+C. The method is overloaded to support variable arguments (correct answer)
+Correct Answer: C is not true because the method is not overloaded,
+the method List.of is. List.copyOf only accepts a Collection as its parameter.
+
+D. The method is static
+
+E. The list being copied will have its elements copied in the same order of the list
+
+F. All are true
+
+G. None are true
+
+-------------------------------------------------------------
+######### Anonymous classes #############
+
+1- anonymous class same as local except that they do not have a name.
+
+        // Anonymous class is a statement, not a declaration.
+        // This one is a Helloable (implements Helloable)
+        Helloable anomInterfacedClass = new Helloable() {
+            public void hello() {
+                System.out.println("Hello Anonymous Class" +
+                        " implementing Interface");
+            }
+        };
+
+        // In the code below, we actually pass an anonymous class in the
+        // call to a method that accepts a Helloable type as a parameter
+        a.printHello(
+                // Anonymous class created on the fly
+                new Helloable() {
+                    public void hello() {
+                        System.out.println("Hello Anonymous Class " +
+                                "passed as a parameter");
+                    }
+                }
+        );
+
+        // In the code below, we now replace the anonymous class parameter
+        // with a lambda expression
+        a.printHello(
+                // Lambda Expression
+                () -> System.out.println("Hello Lambda Expression" +
+                        " as a parameter")
+        );
+
+########## lambda expression
+
+2- functional interface provide target types for lambda expressions and method references.
+   each functional interface has a SINGLE abstract method called functional method.
+
+3- sometimes lambda expression does nothing but call an existing method.
+   in that cases u can use a method reference as they are easy to read.
+   example for method reference:
+   System.out::println
+
+   a method reference can completely replace a lambda expression with an arrow token,
+   if a method referred to meets the requirement for function interface method...
+
+4- valid lambda declaration:
+
+   (int a) -> a + 1; // note that u need to add () if u declare the type ...
+   (a, b) -> a + b; // multiple param require ()
+
+5- invalid lambda expression:
+
+   int a -> a + 1; // if u specify type then u should add ()
+   (int a, b) -> a + b; // all param must specify type, or none of them
+   (a , b) -> a + b; // must use () for multiple params...
+   (int a, var b) -> a + b; // cant mix var with actual data types.
+   () -> return 1;  // using return requires use of curly braces.
+
+
+6- java provide several interfaces that satisfy common patterns, and several of these
+   are in java.util.function package. NOT in java.lang.function
+
+   UnaryOperator<T>
+   BinaryOperator<T>
+   Consumer<T>
+   Predicate<T>
+   Supplier<T>
+   Function<T,R>
+
+7- TRICKY QUESTION:
+
+public class Test {
+    interface Changeable {
+        void change(String s);
+    }
+
+    public static void main(String[] args) {
+        Test t = new Test();
+        Changeable c = (s) -> s = s + " World"; // Line 1
+        String str = "Hello";
+        t.changeIt(str, c);  // Line 2
+        t.changeIt(str, (s) -> s = s + " Hello");  // Line 3
+        System.out.println(str);
+    }
+
+    public void changeIt(String s, Changeable c) {
+        c.change(s);
+    }
+}
+
+the output is Hello....

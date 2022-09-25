@@ -1,0 +1,215 @@
+############# Modules #################
+
+we have three ways to expose modules:
+1- public to everyone.
+2- public to just specific modules deemed friends.
+3- not public to any other modules, but only to the packages included in module itself.
+
+there are two set of modules in java:
+1- java SE platform which contains modules that starts with java. or javax.
+   and these are standard.
+2- JDK these APIS may not necessarily be available in all implementations of java SE platform.
+   - modules starts with jdk. prefix.
+   - these are non standard modules.
+
+------------------------
+some useful commands:
+1- list all java modules:
+   java --list-modules
+   java -p MyFirstModule.jar --list modules (will list modules in this jar file)
+
+2- we can describe java module and see the dependencies of this modules by running:
+   java --describe-module <module-name>
+   java --describe-module java.logging
+
+   or we can use jdeps command:
+
+   the below commands are same:
+   jdeps --print-module-deps -m (or --module) <module-name>
+   jdeps --list-reduced-deps --module <module-name>
+   jdeps --list-deps --module <module-name>
+
+3- ALL modules require java.base...
+
+-----------------------------
+creating a new module in intelji
+
+1- after adding module in project we need to go to module itself and describe it as module
+   by adding module-info.java
+
+2- lets run it from command line as module by running :
+   java --module-path out\production\  -m MyFirstModule/modular.HelloWorld (notice we must specify main class)
+
+3- we can create an executable jar file that include these modules by running:
+   jar --create --file MyFirstModule.jar --main-class modular.HelloWorld -C out\production\MyFirstModule\ .
+
+4- now after having the jar file we can examine the modules in this jar by running:
+   jar -f MyFirstModule.jar --list
+   jar -f MyFirstModule.jar -d (to describe the module and its dependencies)
+      OR u can run it throw java command but here u need to pass the module pass instead of jar file...
+   java --module-path . --describe-module MyFirstModule
+   java -p . -d MyFirstModule
+
+5- after having the jar file we can go to same jar directory and execute the following command:
+   java --module-path . --module MyFirstModule.
+   notice: that we are in   MyFirstModule.jar path...
+
+6- lets analysis the jar file using jdeps and the output will be list of dependencies for this jar...
+   jdeps MyFirstModule.jar
+
+-------------------------------------------
+
+1- java --dry-run -p . --module MyFirstModule (this loads the main class but it does not run it, its used for testing only)
+2- jdeps --check java.sql (print list of dependencies after analysis and it will also identifies any unused qualified exports)
+3- lets say u have two modules:
+   MyFirstModule
+   MySecondModule
+   and we want to import MySecondModule in MyFirstModule
+
+   then we need to add the following:
+   1- in MyFirstModule -> module-info.java add the following:
+      module MyFirstModule {
+         requires MySecondModule;
+      }
+   2- in MySecondModule -> module-info.java add the following:
+      module MySecondModule {
+         export <package-name>;
+      }
+
+   3- then in first module u can run it thro:
+      jdeps --module-path .;out MyFirstModule  (.;out is to include 2nd module)
+
+      in jdeps -p is NOT same as --module-path            /**************** TRICKY ****************/
+      in jdeps -p is package and NOT path...
+
+------------------------------------------------------------------
+Module Directives:
+
+requires org.module.a;
+requires transitive org.module.d
+requires static org.module.e
+
+exports org.pkg.base;  // it will expose package as public and protected types to modules that read this module
+                       // in other words - specifies a requires directive to the current module..
+
+export org.pkg.util to org.module.a, org.module.b; // export module to only specific friend module.
+
+
+example:
+assume we have created a module ModuleA and we have added module-info.java and add the following inside this file:
+
+module ModuleA { // note it should be same as module name
+  exports org.module.global;
+}
+then we build and compile module -> it will generate compiled file .class in out/production
+then in java command we can run:
+java --module-path out/production --describe-module org.module.global
+
+/////
+okay after that lets add a new module that requires ModuleA...
+and inside module-info we will add the following:
+
+module ModuleB {
+   requires transitive org.module.global; // we are using transitive here so any module requires ModuleB will be also able to read org.module.global
+}
+
+------------------------------
+when your module has a dependency on other module that this other module not in java standard module, then WE MUST specify path
+jdeps org.module.util   // this will show error
+jdeps --module-path . org.module.util // this is OKAY
+
+---------------------------
+
+export syntax:
+exports     org.pkg.util       to    org.module.base, org.module.concrete;
+        (should be one only)          (multiple separated with comma)
+
+NOTE:
+cant have multiple export for same package, example:
+exports org.pkg.util to org.module.base;
+exports org.pkg.util to org.module.concrete; //compiler error...
+
+-------------------------------------
+
+module graph for custom modules....
+
+// this command will show the dependencies
+jdeps -s org.module.global  (-s: summary)
+or
+jdeps -summary org.module.global
+or
+jdeps -v org.module.global  (-v: verbose)
+or
+jdeps -verbose org.module.global
+
+// notice for above command we did not see -- , only one -
+// only for -summary and -verbose we use one - , others we use -- like --module-path
+
+-----------------------------
+
+NOTES:
+1- the requires directive requires a module, not a package.
+   requires pkg.core; // compiler error
+   requires ModuleB; // OKAY
+
+2- you can only declare one module in a single requires directive.
+   requires module.core, module.entity; // compiler error
+   requires module.core; // OKAY
+
+3- transient is not a directive modifier, transitive is.
+   requires transient module.core; // compiler error
+   requires transitive module.core; // OKAY
+
+4- ou can only declare a single package in the exports directive (and a package can only be declared in one exports directive).
+   You can export to multiple friend modules.
+    exports pkg.core, pkg.base to module.entity; // compiler error
+    exports pkg.core to module.entity, module.base; // OKAY, exporting package to different modules...
+
+
+----------------------------
+
+TRICKY QUESTION:
+
+Given the following modules:
+
+module.core contains a package pkg.core
+
+module.base contains a package pkg.base
+
+module.entity contains a package pkg.entity
+
+
+
+Which of the following is a valid directive for module.base?
+
+A.  requires module.core, module.entity;
+
+B.  requires transient module.core;
+
+C.  exports pkg.core, pkg.base to module.entity;
+
+D.  exports pkg.base to module.entity; (correct answer)
+
+E.  requires pkg.core;
+
+F.  None of the above
+
+G. All of the above
+
+-------------------------------
+
+TRICKY QUESTION
+
+Which command line tools does not have an option -p which can be used interchangeably with --module-path?  Pick all that apply.
+
+A.  javac
+
+B.  java
+
+C.  jar
+
+D.  jdeps (correct answer)
+jdeps has a different meaning for the option -p than the other tools (javac, java, jar),
+where -p is synonymous with --module-path. In jdeps -p is synonymous with -package and --package.
+
+E.  none of the above
