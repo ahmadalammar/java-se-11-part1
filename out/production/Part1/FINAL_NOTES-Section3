@@ -1,0 +1,236 @@
+1- Cant add _ or - after 0b or 0x directly, or before e (_e)
+   example:
+   byte b = 0b_00001; , char c = 0x_00001;
+
+2- Note that byte range -128 to 127.
+
+3- below is tricky code bcoz it includes both widening and narrowing:
+
+public class Test {
+    public static void main(String... args) {
+
+        char myChar = 'a';
+        byte myByte = 1;
+        short myShort = 1;
+        int i=10;
+
+        myChar = 'a'; // this is okay
+        myChar = myByte; // compiler error, this is include both widening and narrowing,
+        // first byte widened to int (and int range is more than char range...), then the result is converted to a char
+        // by narrowing it.
+
+        myShort = myChar; // compiler error,although short and char same size, but char
+        // is unsigned so the conversion not allowed
+        myChar = myShort; // compiler error
+    }
+}
+
+4- be aware of clashing between method signature variable name and local variable name,
+
+int age; // instance variable
+
+public String getDecade(int age) {
+   String name="alammar";
+   int age = 27; // compiler error, as age already declared at method signature
+   int g = this.age; // its okay to use this.age bcoz we use fully qualified this.age to reference the age...
+}
+
+5- cant use var in compound declaration:
+    var j = 0, k = 0; // compiler error
+    var someObject; // compiler error, u must init the variable....
+    var myArray = {"A", "B"}; // cant use array initializer with var...
+
+6- String comparsion:
+   str.equalsIgnoreCase(String str) // MUST BE STRING
+   str.compareTo(String str); // MUST BE STRING
+
+7- lets say we have 2 strings:
+      String firstString = "Hello";
+      String secondString = null;
+      we will notice that string comparison will handle it differently
+
+      (firstString == secondObject)                   ->     (Hello == null) = false
+      (firstString.equals(secondObject))              ->     Hello.equals(null) = false
+      firstString.equalsIgnoreCase(secondObject))     ->     Hello.equalsIgnoreCase(null) = false
+      (firstString.contentEquals(secondSequence))     -> IT WILL THROW RUNTIME EXCEPTION bcoz 2nd param is null  /*************** memorize **************/
+      (firstString.compareTo(secondString))           -> IT WILL THROW RUNTIME EXCEPTION bcoz 2nd param is null  /*************** memorize **************/
+      (firstString.compareToIgnoreCase(secondString)) -> IT WILL THROW RUNTIME EXCEPTION bcoz 2nd param is null  /*************** memorize **************/
+
+8- String.Replace:
+   note: only string replaceAll and replaceFirst uses regex...
+   String.replace(char , char) // does not use regex
+   String.replace(CharSequence target, CharSequence dest) // does not use regex
+   replaceAll and replaceFirst use regex....
+
+9- string.subSequence(start, end); // u must always set the start and end indexes....
+   and subSequence returns CharSequence...which is the interface and u cant assign it to String....
+
+10-  uppercase letters come first then only lower case...
+     : ABCDE...abcd
+
+11- String.replace, replaceAll, replaceFirst...
+    - if there is no match, a new String object is NOT created.
+
+      String stringOriginal = "aaabbb";
+      // The behavior is the same for all the replace methods,
+      // if there is no match, a new String object is NOT created.
+      String stringReplaced = stringOriginal.replace('C', 'a');
+      System.out.println("1.  stringOriginal==stringReplaced = " + (stringOriginal == stringReplaced)); // true
+
+    - if replacement is same then if u using '' then it wont create a new string,
+      BUT if replacement is "" then it WILL create a new String...
+
+12- substring(0, str.length()) will not create a new string bcoz its same....
+
+        public static void main(String[] args) {
+            String stringOriginal = "aaabbb";
+            String stringReplaced ;
+
+            // Note that creating a 'substring' which is same as string
+            // does NOT create a new object.
+            stringReplaced = stringOriginal.substring(0, stringOriginal.length());
+        }
+
+13- StringBuilder Constructors:
+
+   StringBuilder()     // default capacity 16
+   StringBuilder(CharSequence s) // s.length() + 16
+   StringBuilder(int capacity) // init capacity
+   StringBuilder(String s)   // s.length() + 16
+
+example :
+public class Test {
+    public static void main(String[] args) {
+        StringBuilder sb3 = new StringBuilder();
+        // Add 26 character string at beginning, which exceeds the
+        // initial capacity of 16
+        /***
+         * Note:
+         * if the number of the character increases from its current capacity, it increases the capacity by (oldcapacity*2)+2
+         * ****/
+        sb3.append("abcdefghijklmnopqrstuvwxyz");
+        System.out.println("sb3.length = " + sb3.length()); // 26
+        System.out.println("sb3.capacity = " + sb3.capacity());// 34
+    }
+}
+
+14- StringBuilder Comparator:
+    - since StringBuilder inherits equals() from java.lang.Object, and as such StringBuilder.equals()
+    returns true only when passed the same object as an argument.
+    It does not compare the contents of two StringBuilders
+
+    - the best way to compare two stringBuilder is by using compareTo...
+
+example below:
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Set up some test data.
+        StringBuilder sb = new StringBuilder("This is a test");
+        StringBuilder sb2 = new StringBuilder("This is a test");
+
+        // == comparator (compares references)
+        System.out.println("(sb == sb2) = " + (sb == sb2));
+
+        // .equals operator from java.lang.Object
+        System.out.println("(sb.equals(sb2)) = " + (sb.equals(sb2)));
+
+        // .compareTo method defined on StringBuilder Object
+        System.out.println("(sb.compareTo(sb2)) = " + (sb.compareTo(sb2)));
+
+        // .equals used to compare String Values of StringBuilder objects
+        System.out.println("sb.toString().equals(sb2.toString()) = " +
+                sb.toString().equals(sb2.toString()));
+
+        // == used to compare String Values of StringBuilder objects
+        System.out.println("sb.toString() == sb2.toString()) = " +
+                (sb.toString() == sb2.toString()));
+    }
+}
+
+15- StringBuilder insert method has offset, while append does not have offset
+    and it will always append to end of the stringBuilder....
+
+16- StringBuilder does not have method called remove, only delete..
+
+example:
+
+public class Test {
+    public static void main(String[] args) {
+        // delete function will remain only the string from 4, sb.length() and it will delete the rest....
+        // Set up some test data.
+        StringBuilder sb = new StringBuilder("This is a test");
+        System.out.println("**"+sb.delete(4,sb.length())+"**"); // **This**
+        System.out.println("**"+sb+"**"); // **This**
+
+    }
+}
+
+17- stringBuilder.trimToSize() reduce the storage and it will make strBuilder.length() = capacity...
+
+18 - Tricky question:
+
+public class Test {
+    public static void main(String[] args) {
+        // Create empty StringBuilder
+        StringBuilder builder = new StringBuilder();
+
+        // Test data
+        builder.append(" just more text because we need more text");
+        char[] myCharacterArray1 = new char[10];
+        char[] myCharacterArray2 = new char[10];
+
+        // calling getChars on a String with srcBegin = 20,  srcEnd = 27
+        builder.toString().getChars(20, 27, myCharacterArray1, 0); // getChar copy string to char array   /*************** memorize ***********/
+        // IMPORTANT NOTE:  getChar accept only char array an NOT charSequance or String,                 /*************** memorize ***********/
+        // IMPORTANT NOTE: getChar destenation array MUST be initilized                                   /*************** memorize ***********/
+        // calling getChars on a StringBuilder object with srcBegin = 20,  srcEnd = 27
+        builder.getChars(20, 27, myCharacterArray2, 0);
+
+        System.out.println("myCharacterArray1 = " +
+                java.util.Arrays.toString(myCharacterArray1)); // myCharacterArray1 = [u, s, e,  , w, e,  ,  ,  ,  ]
+        System.out.println("myCharacterArray2 = " +
+                java.util.Arrays.toString(myCharacterArray2)); // myCharacterArray2 = [u, s, e,  , w, e,  ,  ,  ,  ]
+
+        // Set up some test data
+        char[] myCharacterArray3 = new char[builder.length()];
+        char[] myCharacterArray4 = new char[builder.length()];
+
+        // calling getChars on a String with srcBegin = 20,  srcEnd = 21
+        builder.toString().getChars(20, 21, myCharacterArray3, 0);
+        // calling getChars on a StringBuilder object with srcBegin = 20,  srcEnd = 21
+        builder.getChars(20, 21, myCharacterArray4, 0);
+        System.out.println("myCharacterArray3 = " +
+                java.util.Arrays.toString(myCharacterArray3)); // myCharacterArray3 = [u,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ]
+        System.out.println("myCharacterArray4 = " +
+                java.util.Arrays.toString(myCharacterArray4)); // myCharacterArray4 = [u,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ,  ]
+
+        // Set up additional test data
+        char[] myCharacterArray5 = new char[10];
+        char[] myCharacterArray6 = new char[10];
+
+        // change destination index from 0 to 3 for String
+        builder.toString().getChars(20, 27, myCharacterArray5, 3);
+        // change destination index from 0 to 3 for String
+        builder.getChars(20, 27, myCharacterArray6, 3);
+
+        System.out.println("myCharacterArray5 = " +
+                java.util.Arrays.toString(myCharacterArray5)); // myCharacterArray5 = [ ,  ,  , b, e, c, a, u, s, e]
+        System.out.println("myCharacterArray6 = " +
+                java.util.Arrays.toString(myCharacterArray6)); // myCharacterArray6 = [ ,  ,  , b, e, c, a, u, s, e]
+
+        // Let's change the destination index
+        // the below code will throw java.lang.StringIndexOutOfBoundsException bcpz the dest arr is shorter that 20->27
+        // the destination char array size must be greater or equal to the length of selected source + defined destination index...        /*********** TRICKY-V2 ********/
+//        char[] myCharacterArray7 = new char[5];
+//        char[] myCharacterArray8 = new char[5];
+//        builder.toString().getChars(20, 27, myCharacterArray7, 3);
+//        builder.getChars(20, 27, myCharacterArray8, 3);
+//        System.out.println("myCharacterArray7 = " +
+//                java.util.Arrays.toString(myCharacterArray7));
+//        System.out.println("myCharacterArray8 = " +
+//                java.util.Arrays.toString(myCharacterArray8));
+    }
+}
+

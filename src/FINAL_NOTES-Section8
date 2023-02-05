@@ -1,0 +1,52 @@
+1- Cant use super keyword in static method.
+
+2- tricky question:
+Which statement can be inserted into the code above at //** Insert code here **/ to print "Hello World".
+
+--------------  SuperClass.java source code ------------------
+
+package pkgb;
+
+class SuperClass {
+    public void printPublicData(String data) {
+        System.out.println(data);
+    }
+    void printPackageData(String data) {
+        System.out.println(data);
+    }
+    protected void printProtectedData(String data) {
+        System.out.println(data);
+    }
+    private void printPrivateData(String data) {
+        System.out.println(data);
+    }
+}
+-------------- TestClass.java source code ------------------
+package pkga;
+
+import pkgb.SuperClass;
+
+public class TestClass extends SuperClass {
+    public static void main(String[] args) {
+
+       //** Insert code here **/
+    }
+}
+--------------------------
+A. new TestClass().printPublicData("Hello World");
+
+B. new TestClass().printPackageData("Hello World");
+
+C. new TestClass().printProtectedData("Hello World");
+
+D. new TestClass().printPrivateData("Hello World");
+
+E. Both A and C.
+
+F. Both B and D.
+
+G. None of the Above (correct answer)
+  SuperClass has no modifier which means it is package-private access. This means that TestClass cannot extend it, so none of SuperClass's methods can be accessed from TestClass.
+
+
+

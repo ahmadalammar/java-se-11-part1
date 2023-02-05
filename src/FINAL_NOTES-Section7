@@ -1,0 +1,69 @@
+1- u cant extend a class that has ONLY a private no-args constructor...
+   it should have other param constructors in order to extend it....
+
+example:
+
+class OnlyClass {
+
+    // private constructor, the ONLY constructor
+    private OnlyClass() {
+    }
+
+    OnlyClass(String s){
+
+    }
+
+}
+
+class OnlyClassExtend extends OnlyClass {
+
+    // if u remove below constructor then its compiler error bcoz no default constructor found....
+    OnlyClassExtend(String ss) {
+        super("dsd");
+    }
+
+}
+
+2- tricky question:
+
+
+class StaticStuff {
+    static /*final*/ String appName = "A Good App"; // if u add final to static then the static initializer will not be called
+    // bcoz final is a constant and its evaluated during compile time...
+
+    // static initializer
+    static {
+        System.out.println("Initializing StaticStuff class");
+        StaticStuff.counter++;
+    }
+
+    static void printAppName() {
+        System.out.println("Application Name:  " + appName +
+                " : counter  = " + counter);
+    }
+
+    static int counter;
+}
+
+public class Test {
+    public static void main(String[] args) {
+        System.out.println("Application Name: " + StaticStuff.appName);
+        System.out.println("Counter : "+StaticStuff.counter); // only when we call StaticStuff.counter the static initializer being called
+        // bcoz counter is not final and its just a static....
+    }
+}
+
+3-
+/********* Note before you start ********
+ * for overloading the compiler will choose which method to call using the following rules:
+ * 1- choose method with the exact match : int-> int, long->long ... etc
+ * 2- allow widening using th following:
+ *    byte -> short -> int
+ *    char -> int -> long -> float -> double
+ * 3- allow boxing and unboxing :
+ *    int -> Integer
+ *    Integer -> int
+ * 4- if none match from previous then it will use arity ....
+ *    int... arr (this will be the last option...)
+ *
+ * *********************************/

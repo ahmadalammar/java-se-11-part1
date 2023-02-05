@@ -886,6 +886,18 @@ public class Test {
 ----------------------------------------------------
 ######### casting arrays and arrayList #############
 
+/******************** TRICKY-V2  ******************/
+if class B is a subclass from class A,
+and we have method that accept List<A>
+
+and we have two variables
+List<B> listB;
+List<A> listA;
+
+then u cant pass listB to the method,
+if B is subclass of A
+that does NOT means that List<B> is subclass of List<A>
+
 
 import java.util.ArrayList;
 import java.util.List;

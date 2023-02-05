@@ -1,0 +1,179 @@
+1- int[] arr = null; // u can set array to null! but its value cant be set to null coz primitive can take null value.
+
+2- invalid array declaration:
+   - String[] arr5 ;
+   arr5={"one","two",null,"three"}; // should be in same line....
+
+   - short[] myShortArray , myShortArray2 = myShortArray3 = {1,2,3,4,5}; // can't use array initializer in compound statement
+
+   - int c[] = new int[5][]; // cant init two dimension array and assign it to one dimension array.
+
+3- usually we use java.util.Arrays class to manipulate arrays.
+
+4- // elements initialized to null
+   Integer[] integerArray = new Integer[5];
+
+   // elements initialized to 0
+   int[] intArray = new int[5];
+
+5- its important to note that any changes on integerArray2 and intArray2 will be reflected on
+   the original array and vise versa, bcoz when u do like this: int[] intArray2 = intArray; , Integer[] integerArray2 = integerArray;
+   both of them will point to same reference in memory .....
+   this only for arrays, for normal strings and normal primitive type it wont be reflected on original value.
+
+   Integer[] integerArray = new Integer[5];
+
+   // elements initialized to 0
+   int[] intArray = new int[5];
+
+   // Create new int[] variable reference and assign it intArray
+   int[] intArray2 = intArray;
+
+   // Create new Integer[] variable reference and assign it intArray
+   Integer[] integerArray2 = integerArray;
+
+6- CANT assign array of wrapper to array of primitive
+   Integer[] i = new Integer[2];
+   int[] i2 = i; // compiler error
+
+   int[] i3 = new int[2];
+   i = i3;//  compiler error
+
+7- comparing two array of strings, even tho they have same values and same orders it will be false(bcoz both of them have different reference),
+   the best way to compare two array of string is to convert to List then use equal() method OR use Arrays.equals(Type A, Type A) ....
+
+   // two arrays with exactly same values...
+   String[] firstString = {"abc", "def", "ghi", "jkl", "mno",
+                   "pqr", "stu", "vwx", "yz"};
+   String[] copyOfFirstString = {"abc", "def", "ghi", "jkl", "mno",
+                   "pqr", "stu", "vwx", "yz"};
+
+   System.out.println(" (firstString.equals(copyOfFirstString)) = "
+                   + firstString.equals(copyOfFirstString)); // false bcoz copyOfFirstString has different address
+
+   // Create pass-thru Lists from the arrays to test List equality
+   List firstList = Arrays.asList(firstString);
+   List secondList = Arrays.asList(copyOfFirstString);
+
+   System.out.println(firstList.equals(secondList)); // true, list.equal compare elements inside and NOT only reference...
+
+   -------------------------
+   Arrays.equals(TypeA, TypeA)
+
+   Number[] number1 = new Integer[10];
+
+   Number[] number2 = new Short[10];
+
+   Integer[] i3 = new Integer[10];
+   System.out.println(Arrays.equals(number1, number2)); // okay, no compiler error
+   System.out.println(Arrays.equals(number1, i3)); // okay bcoz i3 is-A Number...
+
+8- manipulating array includes only changing its values, and NOT its array size....
+
+9- Arrays.asList its a mirror of the original array and any changes u do on the list it will be also
+   reflected on the original value....
+
+10- List.of and List.copyOf returns immutable list, MEANS U CANT CHANGE THE LIST...
+   note #1:
+   List.of and List.copyOf will take a snapshot of the original value,
+   and any changes happened on the original value WILL NOT be reflected on
+   the copied list..
+
+   note #2:
+   u cant change, add or remove the values in List.of and List.copyOf (i notice this only for Strings and primitive types, how about if u have List of objects
+   and u try to change the attributes in object? )
+
+  - changing the object attributes will be also reflected on the list.of and list.copyOf.....
+
+11- List.copyOf take only list in constructor.
+
+12- in subList its a mirror of the original list and any changes
+    u do at subList or list it will be reflected on both side,,,,
+    one thing to note that u cant remove,add to original list
+    then print subList bcoz it will throw an exception : java.util.ConcurrentModificationException
+
+    but u can add/remove to subList and it will be reflected on original list too!!
+
+13- Deep copy involves the copy of primitive data type as well as object references
+    In shallow copy, only fields of primitive data type are copied while the objects references are not copied.
+
+14- //        Long[] newLongArray = new int[2]; // it will show a compiler error
+    //        Integer[] newIntegerArray = new int[2]; // it will show a compiler error
+
+    //        int[] intArray = {0, 1, 2, 3, 4};
+    //        int misMatchedIndex = Arrays.mismatch(intArray, integerArray); // it will show a compiler error
+    //        boolean theSame = Arrays.equals(intArray, integerArray); // it will show a compiler error
+    //        int compared = Arrays.compare(intArray, integerArray); // it will show a compiler error
+
+
+
+            // its okay to use mismatch and equals to compare between two same param type or is A type
+            System.out.println("\n---- Test methods with common super class");
+            Number[] myNumberArray = {0, 1, 2, 4, 5};
+            System.out.println("Arrays.mismatch(myNumberArray, integerArray) = "
+                    + Arrays.mismatch(myNumberArray, integerArray));
+            System.out.println("Arrays.equals(myNumberArray, integerArray) = "
+                    + Arrays.equals(myNumberArray, integerArray));
+
+    //        int compare = Arrays.compare(myNumberArray, integerArray); // Arrays.compare will
+    // compare using comparable.compare , and Number does not implement compareable thats why we cant compare it with integer.....
+
+15- tricky question:
+
+import java.util.Arrays;
+import java.util.List;
+
+public class Test {
+
+    public static void main(String[] args) {
+
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+
+        List firstList = List.copyOf(Arrays.asList(firstString));
+        List secondList = List.of(firstList);
+
+        System.out.println("firstList = " + firstList.toString()); // notice the output here
+        System.out.println("secondList = " + secondList.toString()); // notice the output here
+
+        Object o = firstList.get(0);
+        System.out.println(o.getClass().getName());
+
+        o = secondList.get(0);
+        System.out.println(o.getClass().getName());
+
+    }
+
+}
+
+  List.of can take an array of element and create a list out of it,
+  or it can take variable argument list of objects.
+  and bcoz we did not pass an array to it in the code above,
+  it assumed it was a var args and created an array of 1 element...
+
+16- the code below will thro class cast exception:
+
+public class Test {
+
+    public static void main(String[] args) {
+
+        String[] firstString = {
+                "abc", "def", "ghi", "jkl", "mno",
+                "pqr", "stu", "vwx", "yz"
+        };
+
+        List firstList = List.copyOf(Arrays.asList(firstString));
+
+        // You can call toArray with no parameter, it returns an array of Object
+        Object[] objectArray = firstList.toArray();
+
+        String[] newRepresentation = (String[]) objectArray;
+        System.out.println("newRepresentation array  = " +
+                Arrays.toString(newRepresentation));
+    }
+
+}
+
+

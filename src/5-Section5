@@ -13,7 +13,7 @@
 
         String[] stringArray[]; // two dimension array.
 
-        int[] arr = null; // u can set array to null! but its value cant be set to null coz primitive can take null value.
+        int[] arr = null; // u can set array to null! but its value cant be set to null coz primitive can take null value.     /********* TRICKY *********/
 
         int a2[] = new int[]{1, 2, 3, 4}; // its valid as long as u didnt set the array size , new int[3]{1, 2, 3, 4}; (this will show compiler error)
 
@@ -67,6 +67,7 @@
         int[] intArray = new int[5];
 
 8- important to run the following code:
+         /************** TRICKY - V2- CANT assign array of wrapper to array of primitive ************/
 
 
     public static void main(String[] args) {
@@ -141,7 +142,8 @@
         intArray2[1] = 88;
 
         System.out.println("\n-------- Print Array Values ---------");
-        /********
+
+        /********                 /************* TRICKY ***************/
          * its important to note that any changes on integerArray2 and intArray2 will be reflected on
          * the original array and viseversa, bcoz when u do like this: int[] intArray2 = intArray; , Integer[] integerArray2 = integerArray;
          *  both of them will point to same reference in memory .....

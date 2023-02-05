@@ -532,7 +532,7 @@ public class Test {
             case ("1"):
                 System.out.println("Output is 1");
                 break;
-            case ("1" + "2"):  // concatenation operator in expression.
+            case ("1" + "2"):  // concatenation operator in expression.         /********** TRICKY ************/
                 // its valid only if compiler can evaluate them at compile time...
                 System.out.println("Output is 12");
                 break;
@@ -608,7 +608,7 @@ public class Test {
         String caseAssignedValue = "";
         for (var i : bytes) {  // Using LVTI here
             switch (i*10) {  // Use an Expression, notice here that i got promoted to int (i*10)
-                // it u make it i only then its compiler error bcoz 1000 out of the range...
+                // if u make it i only then its compiler error bcoz 1000 out of the range...
                 // u can also promot it by add + in front of i : +i
 
                 case 1000:
@@ -722,7 +722,7 @@ public class Test {
 
 }
 
-13 - when u see switch in exam follow the following guide:
+13 - when u see switch in exam follow the following guide:          /***************** TRICKY *****************/
 
 - examine its location if its inside a loop.
 - dont let the breaks and continue statement mislead u.

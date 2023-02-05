@@ -118,6 +118,7 @@ public class Test {
  * - no args parent constructor always called from sub-class.
  *
  * *********/
+
 class ATest {
 }
 
@@ -405,7 +406,7 @@ class WhichOne {
 
 
 /********* Note before you start ********
- * for overloading the complier will choose which method to call using the following rules:
+ * for overloading the compiler will choose which method to call using the following rules:
  * 1- choose method with the exact match : int-> int, long->long ... etc
  * 2- allow widening using th following:
  *    byte -> short -> int
@@ -530,13 +531,39 @@ public class Test {
         result = Calculator.add(1, 12.3); // this will call: add(int a, Double f) , if u make 12.3 12.3f (Calculator.add(1, 12.3f)) then it will be a compiler error...
         System.out.println("result = " + result);
     }
+}           /********** TRICKY NOTE below **************
+1- if u have a method that accept Long wrapper, u cant call it using a primitive int,
+   it must be either long, or 12L
+
+   example:
+
+
+class Calculator {
+
+    public static long add(int a, long b) {
+        System.out.println("int + Long");
+        return a + b;
+    }
+
 }
+
+public class Test {
+    public static void main(String[] args) {
+
+        // Testing Calculator with multiple primitive data types
+        var result = Calculator.add(1,2); // it should be 2L, or u can change wrapper class from Long to long.....
+        System.out.println("result = " + result);
+
+    }
+}
+
+
 
 11- Tricky question about overloading
 just run and see result...
 
 
-public class Test {
+public class Test {           /**************** TRICKY ***************/
     public static void main(String[] args) {
         Test t = new Test();
         char c = 'a';

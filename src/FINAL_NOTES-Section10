@@ -1,0 +1,355 @@
+1- static and non-static method can be private...
+
+2- method body in interface exist only for default, private and static methods.
+
+2- compiler implement different rules of checking casting with interface...
+   for class casting compiler can catch it during run time,...
+
+
+// Very simple interface with one method
+interface Laughable {
+}
+
+// A class that implements the interface
+class Joke implements Laughable {
+
+}
+
+// A class that does not implement the interface
+class Story {
+}
+
+// A class that extends Story class above and implements
+// interface
+class FunnyStory extends Story implements Laughable {
+}
+
+// class Farce will be both a Story and Laughable
+class Farce extends Story implements Laughable {
+}
+
+// The main class
+public class Test {
+    public static void main(String[] args) {
+
+        Story story = new Farce();
+        Joke joke = new Joke();
+
+        // notice the difference between the following two lines,
+        // the first line we are casting it to laughable interface and we did not get any compiler error
+        // bcoz compiler implement different rules of checking casting with interface...
+        // for class casting compiler can catch it during run time,...
+        // Cast objects and pass to our methods
+        testLaughable((Laughable) story);                               /*************** TRICKY ***************/
+        testStory((Story) joke); // compiler error....
+    }
+
+    // Pass through method to execute laugh method on any
+    // object that implements Laughable
+    public static void testLaughable(Laughable l) {
+
+    }
+
+    // Pass through method to execute read method on any
+    // object 'Is A' Story
+    public static void testStory(Story s) {
+
+    }
+}
+
+4- the following example is when u have a class that extend abstract
+      and implement interface and both abstract and interface has same field and method...
+
+      key take note here is overridden method MUST return same type OR more specific type (Is A relationship)
+      if abstract method return a type that is completely different from interface then the compiler trapped ,
+      bcoz he does not know which one to implement..
+
+                                                           /************** TRICKY ************/
+
+   // interface Confusable has a constant name and abstract method
+   interface Confusable {
+       String name = "Confusable";
+
+       String confuse();
+   }
+
+   // Abstract class Confused has a constant name and abstract method
+   abstract class Confused {
+       public static String name = "Confused";
+
+       abstract Object confuse();
+   }
+
+   // AmbiguousExamples will demonstrate some problems with multiple
+   // inheritance of type
+   public class Test extends Confused implements Confusable {
+       public static void main(String[] args) {
+           Test a = new Test();
+           System.out.println("The method confuse returns: " + a.confuse());
+       }
+
+       // notice here return type is string , its sub-class of Object and same type as String from interface....
+       // if we change abstract Object confuse(); to abstract int confuse(); then the below code will show compiler error
+       // and compiler trapped.....
+       public String confuse() {
+           return Confused.name;   // MUST put full qualifier , otherwise its a compiler error
+       }
+   }
+
+5- tricky question:
+
+interface ITest {
+    void myMethod();
+}
+abstract class ATest implements ITest {
+    abstract void myMethod(); // Line 1 notice here it will show compiler error bcoz its weaker modifier than parent....
+}
+
+public class Test extends ATest {
+    public static void main(String[] args) {
+        Test t = new Test();
+        t.myMethod();
+    }
+
+    public void myMethod() {   // Line 2
+        System.out.println("Success");
+    }
+}
+
+
+6- List.of and List.copyOf and immutable and cant accept null values.
+
+7- NOTE about list.remove:
+        stringArray.remove("String_5"); // this will return a boolean true of false
+        stringArray.remove(0); // this will return the object that has been removed
+        stringArray.removeIf(s -> s.contains("_2")); // // this will return a boolean true of false, it take Predictable<E>
+
+8- NOTE about list.add:
+            stringArray.add(1, "String_" + (i + 1)); // this will return void
+            stringArray.add("OKAY"); // this will return boolean true or false if item added successfully
+
+9- tricky a bit:
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Test {
+    public static void main(String[] args) {
+
+        // testValue will be used to access a single value in returned
+        // array
+        int testValue = 0;
+
+        // This is a generically typed ArrayList, passing Integer as the
+        // parameterized type.
+        ArrayList<Integer> intList = new ArrayList<>(List.of(1, 2, 3, 4, 5));
+
+        // This is a raw type ArrayList
+        ArrayList rawList = new ArrayList(List.of(1, 2, 3, 4, 5));
+
+        // Set up the parameter we will pass to the toArray() method
+        Integer[] aIntArray = new Integer[10];
+
+        System.out.println("---- All tests executed with lists that" +
+                " contain: " + rawList + " ----");
+        System.out.println("\nScenario 1:  Parameter is reference variable" +
+                " for Integer[10], elements all null");
+        // Scenario 1: array.length >= list.size();
+        //             and array elements initialized to null
+        // The method toArray([]<T>) populates the passed array with as
+        // many elements as list contains and returns passed array back.
+        // No new array is created.
+        var bInt = intList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to var = " +
+                bInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(bInt));
+        System.out.println("--- aIntArray array elements = " +
+                Arrays.toString(aIntArray)); // same as aInt
+
+
+        // No casting required.
+        testValue = bInt[0];
+        System.out.println("--- No cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // Reset the array we use as a parameter between tests, so
+        // tests between raw ArrayList and generic ArrayList are same
+        aIntArray = new Integer[10];
+
+        // A raw ArrayList will still return array passed, in
+        // this case aIntArray reference
+
+        var bRaw = rawList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList assigned to var = " +
+                bRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(bRaw));
+
+        // Casting required.
+        testValue = (int) bRaw[0];
+        System.out.println("--- Cast required at individual level: the " +
+                "first element is " + testValue);
+
+        System.out.println("\nScenario 2:  Parameter is reference variable" +
+                " for Integer[10], elements all populated");
+        // Scenario 2: array.length > list.size();
+        //             and array elements initialized (not null)
+        // the method toArray([]<T>) populates passed array with as many
+        // elements as list contains, and has one other, maybe unexpected
+        // behavioral twist - it sets the element at list.size() to null,
+        // leaving all other elements at indices > list.size() as they were.
+        aIntArray = new Integer[]{11, 22, 33, 44, 55, 66, 77, 88, 99, 1010};
+        Integer[] cInt = intList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to Integer[] = " +
+                cInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(cInt));
+        System.out.println("--- aIntArray array elements = " +
+                Arrays.toString(aIntArray)); // same as aInt...
+
+        // No casting required.
+        testValue = cInt[0];
+        System.out.println("--- No cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // Reset the array we use as a parameter between tests, so
+        // tests between raw ArrayList and generic ArrayList are same
+        aIntArray = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        // A raw ArrayList will still return array passed, in
+        // this case aIntArray reference, but to assign it to an
+        // Integer[] array we must cast.
+        Integer[] cRaw = (Integer[]) rawList.toArray(aIntArray);   /// TRICKY
+        System.out.println("Result type from ArrayList assigned to  Integer[] " +
+                " required casting = " + cRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(cRaw));
+
+        // No Casting required.
+        testValue = cRaw[0];
+        System.out.println("--- No Cast required at individual level since" +
+                " we cast entire array to (Integer[]) : the first element is "
+                + testValue);
+
+        System.out.println("\nScenario 3:  No parameter passed");
+        // Scenario 3: no parameter
+        // the method toArray() populates a newly instantiated Object[]
+        // array with the list's elements, which happen to all be Integer.
+        // The behavior is the same for both a raw list and generic list
+        Object[] dInt = intList.toArray();   // CANNOT cast to (Integer[])               /***************** TRICKY *****************/
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to Object[] = " +
+                dInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(dInt));
+
+        // Casting required.
+        testValue = (int) dInt[0];
+        System.out.println("--- Cast required at individual level:" +
+                " the first element is " + testValue);
+
+        Object[] dRaw = intList.toArray();
+        System.out.println("Result type from ArrayList " +
+                "assigned to Object[] = " +
+                dRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(dRaw));
+
+        // Casting required.
+        testValue = (int) dRaw[0];
+        System.out.println("--- Cast required at individual level:" +
+                " the first element is " + testValue);
+
+
+        System.out.println("\nScenario 4:  Array passed is too small");
+        // Scenario 4: array.length < list.size();
+        //             and array elements initialized to null or otherwise
+        // the method toArray() populates a newly instantiated
+        // array of the same type as the parameter passed,
+        // and the size of the list itself, not the parameter passed
+        aIntArray = new Integer[3];
+
+        // Let's make no assumptions about what is returned...
+        var eInt = intList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to var = " +
+                eInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(eInt));
+        System.out.println("--- aIntArray array elements = " +
+                Arrays.toString(aIntArray)); // notice its different from eInt, all values is null ...
+
+
+        // No casting required.
+        testValue = eInt[0];
+        System.out.println("--- No cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // Reset the array we use as a parameter between tests, so
+        // tests between raw ArrayList and generic ArrayList are same
+        aIntArray = new Integer[3];
+
+        // A raw ArrayList will still return an Integer[] array
+
+        var eRaw = rawList.toArray(aIntArray);
+        System.out.println("Result type from ArrayList assigned to var = " +
+                eRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(eRaw));
+
+        // Casting required.
+        testValue = (int) eRaw[0];
+        System.out.println("--- Cast required at individual level: the " +
+                "first element is " + testValue);
+
+        System.out.println("\nScenario 5:  Array passed is now Number[] and not a reference variable");
+        // Scenario 5: array.length < list.size();
+        //             and no reference to array passed
+        // the method toArray() populates a newly instantiated
+        // array of the same type as the parameter passed,
+        // and the size of the list itself, not the parameter passed
+
+        var fInt = intList.toArray(new Number[0]);
+        System.out.println("Result type from ArrayList<Integer> " +
+                "assigned to var = " +
+                fInt.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(fInt));
+
+        // casting required.
+        testValue = (int) fInt[0];
+        System.out.println("--- Cast required at individual level:" +
+                " the first element is " + testValue);
+
+        // A raw ArrayList will still return a Number[] array
+
+        var fRaw = rawList.toArray(new Number[0]);
+        System.out.println("Result type from ArrayList assigned to var = " +
+                fRaw.getClass().getTypeName());
+        System.out.println("--- Resulting array elements = " +
+                Arrays.toString(fRaw));
+
+        // Casting required.
+        testValue = (int) fRaw[0];
+        System.out.println("--- Cast required at individual level: the " +
+                "first element is " + testValue);
+    }
+
+}
+
+10 -  List does not have a method called setAll , this method is in Arrays not in List....
+
+11- invalid lambda expression:
+
+       int a -> a + 1; // if u specify type then u should add ()
+       (int a, b) -> a + b; // all param must specify type, or none of them
+       (a , b) -> a + b; // must use () for multiple params...
+       (int a, var b) -> a + b; // cant mix var with actual data types.
+       () -> return 1;  // using return requires use of curly braces.
+
+

@@ -14,7 +14,7 @@
 example:
 refer to pkga.SuperClass abd pkgb.ParentClass
 
-2- u cant override parent attribute, creating an attribute on child class with
+2- u can override parent attribute, creating an attribute on child class with
    the same name and type as the parent. (known as attribute hiding).
    and the child attribute can be either more restrictive or less restrictive than the parent.
 

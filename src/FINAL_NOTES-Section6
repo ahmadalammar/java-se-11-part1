@@ -1,0 +1,82 @@
+1- we can run java app and log garbage collector logs by adding: java.exe Xlog:gc
+
+2- cant use 'this' keyword in static initializer or static methods.
+
+3- illegal forward reference:
+   its when u try use variable in initializer that is below the initializer block...
+
+   example:
+
+   class Thing {
+
+       // Constructor
+       Thing() {
+           secondString = "b";
+       }
+
+       // Initializer
+       {
+           firstString = "assignment okay";
+           secondString="assignment okay";
+           firstString = "a"+thirdString;// okay bcoz thirdString is static variable and this block will only be called after static initializer...
+           //firstString = "a" + secondString; // compiler error...
+           //firstString = "a" + this.secondString; // OKAY, but this.secondString is always null....
+       }
+
+       // Static Initializer
+       static {
+           thirdString = "c";
+            System.out.println(Thing.thirdString); // compiler error...
+           // firstString="1a"; // compiler error, cant access instance variable from static initializer...
+       }
+
+       // Two instance variables
+       String firstString;
+       String secondString;
+
+       // static variable
+       static String thirdString;
+
+       public String toString() {
+           return firstString + secondString + thirdString;
+       }
+   }
+
+   public class Test {
+       public static void main(String[] args) {
+           Thing one = new Thing();
+           System.out.println(one);
+       }
+   }
+
+4- static initializer cant access instance variables
+
+5- u cant assign null to this...
+   this = null;  // compiler error.
+   this = myObject; // compiler error.
+
+6- final fields (THAT ARE NOT STATIC) should be initiated either inline, constructor or at initializer...
+    - and if u have multiple constructor they MUST all init the final fields....
+    - u cant init final field in both initializer and constructor, it MUST be one only bcoz
+      once u set the value to final it cant be changed.
+
+   - if your constant is : final static then u must init it inline OR in static initializer,
+     cant init static constant from constructors.....
+
+    example:
+    class Constants {
+
+        // Compile error if static intitializer removed
+        final static  String THREE;
+
+    //    static {
+    //        THREE = "final static field THREE = three";
+    //    }
+
+        Constants() {
+           THREE="Test";
+        }
+
+    }
+
+

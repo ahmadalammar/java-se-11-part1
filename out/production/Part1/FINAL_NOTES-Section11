@@ -1,0 +1,29 @@
+1- Remember, though, that if all the exceptions belong to the same class hierarchy, you can simply catch that base exception type.
+   Also note that you cannot catch both ExceptionA and ExceptionB in the same block if ExceptionB is inherited, either directly or indirectly,
+   from ExceptionA. The compiler will complain:
+
+2- tricky question:
+
+public class Test {                 /************ TRICKY ********************/
+    public static void main(String[] args) {
+        someMethodThrowsException();
+    }
+
+    public static void someMethodThrowsException() {
+        try {
+            System.out.println("Doing something");
+        } catch (Exception e) {
+            throw new IOException("Testing catch"); // notice here even tho we throw a checked exception we did not throw it in method signature
+            // bcoz we hae finally block that will always be executed and inside finally method we will override the exception and throws runtime exception...
+
+        } finally {
+            throw new RuntimeException("Testing finally");
+        }
+
+    }
+}
+
+3- Reminder, Throwable or custom subclasses of Throwable or Exception or any custom subclasses of Exception
+   is a checked exception....
+
+

@@ -1,0 +1,79 @@
+1- operator promotions:
+  1- for unary operator: if the type of operand is smaller than an int, the operand wil automatically be promoted to an int.
+  2- for binary operator, both operands are promoted to int if they are smaller than an int, but
+     if any of the operands is larger than an int, then its promoted to the larger type.
+
+  short s = 0;
+  s = s + 1; // compiler error, bcoz both will be promoted to int....
+  Note:
+  s+=1; // OKAY, no compiler error...
+
+  byte b=1;
+  b+=1; // okay
+  b = b+1; // compiler error (binary operator)
+
+2- binary operator:
+
+   // Could also be written:  a + (e * b) - (f / c) % b;
+   // 1 + (5*2) - (6/3)%2
+   // 1 + 10 - 0 = 11
+   int result = a + e * b - f / c % b;
+
+3-  if u put sign in front of (byte,short,char) it will be promoted to int.
+    byte b = 1;
+    var b1 = +b; // b1 is int
+
+   - short + byte will be also promoted to int, any binary operator (+,-,*,/) between (short,byte) will be promoted to int...
+
+4- Tricky question about operands:
+
+   int number = 10;
+   int result = number-- - ++number * --number;
+   // 10 - 10 * --(10)=
+   // 10 - 10*9 = -80
+
+5- 'then' and 'elseif' are not valid in java..
+
+6- default block is optional in switch case.
+
+7- Switch case example below:
+
+public class Test {
+    static final String TEST = "test";
+
+    public static void main(String[] args) {
+        // Example of a switch statement with expression based on
+        // compile time constants in the case label
+        String str = "";
+        String test = "12";
+        switch (test) {
+            case ("1"):
+                System.out.println("Output is 1");
+                break;
+            case ("1" + "2"):  // concatenation operator in expression.         /********** TRICKY ************/
+                // its valid only if compiler can evaluate them at compile time...
+                System.out.println("Output is 12");
+                break;
+//            case ("1" + str):  // this is not valid bcoz compiler cant evaluate str during compile time bcoz its not a constant...
+//                System.out.println("Output is 12");
+//                break;
+//
+            case ("2"+TEST): /// its okay bcoz TEST is a constant....
+                System.out.println("Output is 2");
+                break;
+            case ("2"):
+                System.out.println("Output is 2");
+                break;
+            default: // default is optional....
+                System.out.println("Output is default");
+        }
+    }
+}
+
+8- cant use long, double and float in switch.
+
+9- u cant add statements after break; as it will be unreachable...
+
+10- if the switch expression use a local variable it MUST be initialized
+
+

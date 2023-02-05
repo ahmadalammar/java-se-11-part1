@@ -101,11 +101,6 @@ public class Test implements InterfaceExample {
 
 2- casting with class VS casting with interface....
 
-/*
-Learn Programming Academy's Java 1Z0-815 Certification Exam Course
-Section 10: Programming Abstractly Through Interfaces
-Topic: Create and implement interfaces
-*/
 
 // Very simple interface with one method
 interface Laughable {
@@ -193,12 +188,6 @@ public class Test {
    then your class will have a conflict, so u can either remove one of the interfaces
    or override this default method in class....
 
-/*
-Learn Programming Academy's Java 1Z0-815 Certification Exam Course
-Section 10: Programming Abstractly Through Interfaces
-Topic: Create and implement interfaces
-*/
-
 // Teachable interface with abstract method teach
 // and default method teachTheseLessons
 interface Teachable {
@@ -256,7 +245,7 @@ public class Test implements Teachable, Trainable {               /*************
 
 -----------------------------------
 4- the following example is when u have a class that extend abstract
-   and implement interface and both abstract and interface git same field and method...
+   and implement interface and both abstract and interface has same field and method...
 
    key take note here is overridden method MUST return same type OR more specific type (Is A relationship)
    if abstract method return a type that is completely different from interface then the compiler trapped ,

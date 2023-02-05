@@ -1,0 +1,218 @@
+1- we cant override a static method from parent class,
+   or if u have instance method in parent and u try to override this method in subclass
+   and make it static this will also show a compiler error...
+
+   key take note here is when u have override method u cant make any of the method (from parent or subclass)
+   as static...
+   its okay to make BOTH of them static but one only it will introduce a compiler error...
+
+2- if u want to override a method from parent, the subclass must exactly override this method
+   for return type must be same or is A type...
+   for name of method must be same,
+   for method params type MUST be same,
+
+   overridden method should be less restrictive that parent...
+
+   example:
+
+   class BaseClass {
+       public CharSequence getInformation() {
+           return getClass().getName();
+       }
+   }
+
+   class ExtendedClass extends BaseClass {
+
+       // cant make the access modifier here less restrictive than parent...
+       // this is override method bcoz return type Is A, note that String is a type of CharSequence...
+       public String getInformation() {
+           return getClass().getName();
+       }
+   }
+
+3- throwing exception and override...
+   if the parent method throws a Checked exception in method signature,
+   then the subclass overridden method can either throw the same exception or more specific exception.
+   or he can also not to throw exception so its optional.....
+
+4- we will notice that if u have array of object with type A, then u
+   try to cast it back again to array of type A then it will show runtime error...
+
+   example below:
+
+
+import java.util.Arrays;
+
+public class Test {
+    // Just want a few classes to play with
+
+    static class BaseClass {
+        String name = "Base Case";
+
+        public String toString() {
+            return getClass().getName();
+        }
+    }
+
+    static class NextClass extends BaseClass {
+        String name = "Next Best Case";
+    }
+
+    // main method, we'll test out some more casting examples
+    public static void main(String[] args) {
+
+        BaseClass mixedArray[] = new BaseClass[6];
+
+        // Let's actually fill it with just NextClass objects .
+        Arrays.fill(mixedArray, new NextClass());
+//        // JVM still doesn't allow it                 /*************** TRICKY **************/
+        //NextClass[] nextArray2 = (NextClass[]) mixedArray; // runtime error....
+
+        NextClass dd = (NextClass) mixedArray[0]; // OKAY NO COMPILER ERROR
+
+    }
+}
+
+5- if class B is a subclass from class A,
+   and we have method that accept List<A>
+
+   and we have two variables
+   List<B> listB;
+   List<A> listA;
+
+   then u cant pass listB to the method,
+   if B is subclass of A
+   that does NOT means that List<B> is subclass of List<A>
+
+   example below:
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Test {
+
+    // Just want a few classes to play with
+
+    static class BaseClass {
+        String name = "Base Case";
+
+        public String toString() {
+            return getClass().getName();
+        }
+    }
+
+    static class NextClass extends BaseClass {
+        String name = "Next Best Case";
+
+        public String toString() {
+            return getClass().getName() + ": " + name;
+        }
+
+        public static void testIt(List<BaseClass> baseListParameter) {
+            System.out.println(baseListParameter);
+        }
+    }
+
+    public static void main(String[] args) {
+        // Raw types
+
+        //  Create ArrayList and assign to ArrayList variable
+        ArrayList rawList = new ArrayList();
+        // Declare a List variable
+        List aList;
+        // Assign ArrayList object to List variable:
+        aList = rawList;
+
+        // Typed generic lists
+
+        //  Create a typed ArrayList using BaseClass and assign to
+        //  ArrayList variable
+        ArrayList<BaseClass> baseList = new ArrayList<>();
+        // Declare a typed List variable using BaseClass as type
+        List<BaseClass> bList;
+        // Assign typed ArrayList object to typed List variable
+        bList = baseList;
+
+        // Add a NextClass object to the raw ArrayList
+        rawList.add(new NextClass());
+
+        // Add a NextClass object to the typed ArrayList
+        baseList.add(new NextClass());
+
+        // Print ArrayList and List variables.
+        System.out.println("We can use either variable to print the raw ArrayList");
+        System.out.println("-- aList = " + aList);
+        System.out.println("-- rawList = " + rawList);
+        System.out.println("We can use either variable to print the typed ArrayList");
+        System.out.println("-- bList = " + bList);
+        System.out.println("-- baseList = " + baseList);
+
+//        // Let's add the StringBuilder object to raw list
+        rawList.add(new StringBuilder("Hello"));
+//
+//        // Let's add the StringBuilder object to typed list
+     //   baseList.add(new StringBuilder("Hello"));
+
+        // We create variable of NextClass and assign it a new instance
+        // NextClass
+        NextClass nextClass = new NextClass();
+
+        // We create variable of BaseClass and assign it the nextClass
+        // variable - this is a good assignment as we know.  You can
+        // assign a more specific typed object to a less specifically
+        // typed variable.
+        BaseClass baseClass = nextClass;
+
+        // We now create an ArrayList of NextClass and assign it to a
+        // variable of ArrayList typed to NextClass.
+        ArrayList<NextClass> nextList = new ArrayList<>();
+        nextList.add(nextClass);
+
+        // We assign nextList to the raw ArrayList variable
+        rawList = nextList;
+        // We assign nextList to the raw List variable
+        aList = nextList;
+
+//        // We assign nextList to the typed ArrayList of BaseClass variable
+//        baseList = nextList;                         /**************** TRICKY *****************/
+//        // We assign nextList to the typed List of BaseClass variable
+//        bList = nextList;                             /**************** TRICKY *****************/
+
+        // Execute testIt method with List<BaseClass>
+        NextClass.testIt(bList);
+
+        // Execute testIt method with ArrayList<BaseClass>
+        NextClass.testIt(baseList);
+
+        // Execute testIt method with ArrayList<NextClass>
+//        NextClass.testIt(nextList);                     /**************** TRICKY *****************/
+
+        // Casting doesn't fix it
+//        baseList = ( ArrayList<BaseClass> )  nextList;
+//
+//        ArrayList<NextClass> anotherTest = ( ArrayList<NextClass> ) rawList;
+//
+//        ArrayList<NextClass> anotherTest = ( ArrayList<NextClass> ) baseList;
+
+        // No cast required, retrieving data from ArrayList, typed with
+        // NextClass
+        NextClass next = nextList.get(0);
+        System.out.println("next here is " + next);
+
+        // No cast required, retrieving data from ArrayList, typed with
+        // BaseClass
+        BaseClass base = baseList.get(0);
+        System.out.println("base here is " + base);
+        // need a cast still if retrieving more specifically typed object
+        next = (NextClass) baseList.get(0);
+        System.out.println("next here is " + next);
+
+        // Cast required, retrieving data from raw ArrayList
+        next = (NextClass) rawList.get(0);
+        System.out.println("next here is " + next);
+
+
+    }
+}
+

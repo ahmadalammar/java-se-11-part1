@@ -66,9 +66,15 @@ try {
 {
 }
 
+/***************** TRICKY ****************/
+Remember, though, that if all the exceptions belong to the same class hierarchy, you can simply catch that base exception type.
+
+Also note that you cannot catch both ExceptionA and ExceptionB in the same block if ExceptionB is inherited, either directly or indirectly, from ExceptionA. The compiler will complain:
+
+
 9- throwing exception in finally...
 
-public class Test {
+public class Test {                 /************ TRICKY ********************/
     public static void main(String[] args) {
         someMethodThrowsException();
     }
@@ -145,7 +151,7 @@ C. Code compiles, executes but outputs nothing
 D. Code compiles, but exception occurs and nothing is output
 
 E. Code does not compile (correct answer)
-he variable i remains uninitialized when the finally clause is executed.
+the variable i remains uninitialized when the finally clause is executed.
 If i were initialized to zero when it was declared, A would be correct.
 
 ----------------------------

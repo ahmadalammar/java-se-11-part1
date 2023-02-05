@@ -318,14 +318,14 @@ public class Test {
     }
 
 
-    - u cant assign null to this...
+    - u cant assign null to this...              /********** TRICKY ************/
     this = null;  // compiler error.
     this = myObject; // compiler error.
 
 
 19- final fields should be initiated either inline, constructor or at initializer...
     - and if u have multiple constructor they MUST all init the final fields....
-    - u cant assign final field in both initializer and constructor, it MUST be one only bcoz
+    - u cant init final field in both initializer and constructor, it MUST be one only bcoz
       once u set the value to final it cant be changed.
 
 class Constants {
